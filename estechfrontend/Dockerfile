@@ -1,30 +1,24 @@
-# Base image
-FROM node:20-alpine AS build
+# Используем официальный образ Node.js
+FROM node:18 as build
 
-# Set working directory
+# Устанавливаем рабочую директорию
 WORKDIR /app
 
-# Install dependencies
-COPY package.json package-lock.json ./
-RUN npm ci
+# Копируем package.json и устанавливаем зависимости
+COPY package.json /app/
+COPY package-lock.json /app/
+RUN npm install
 
-# Copy source code
-COPY . .
-
-# Build the application
+# Копируем остальные файлы и запускаем сборку проекта
+COPY . /app/
 RUN npm run build
 
-# Serve the build with a lightweight web server
+# Используем Nginx для обслуживания статических файлов
 FROM nginx:alpine
-
-# Copy the built files from the previous stage
 COPY --from=build /app/dist /usr/share/nginx/html
 
-# Copy custom Nginx config
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Копируем файл конфигурации Nginx
+COPY nginx.conf /etc/nginx/nginx.conf
 
-# Expose the port Nginx will run on
+# Открываем порт для доступа
 EXPOSE 80
-
-# Start Nginx
-CMD ["nginx", "-g", "daemon off;"]
