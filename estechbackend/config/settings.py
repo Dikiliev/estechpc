@@ -15,7 +15,7 @@ SECRET_KEY = 'django-insecure-8ibfycwawnd7x^mojob8=#!lb^fg7@j+fobb1cid=tw2)evs_9
 
 DEBUG = os.getenv('DJANGO_DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = ['esteachpc.ru', 'localhost', 'http://localhost:3000', 'http://localhost:5173',]
+ALLOWED_HOSTS = ['estechpc.ru', 'localhost', 'http://localhost:3000', 'http://localhost:5173',]
 
 if DEBUG:
     ALLOWED_HOSTS.append('*')
