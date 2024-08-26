@@ -12,7 +12,7 @@ class Category(models.Model):
     image = models.ImageField(upload_to='products', blank=True, null=True)
 
     def __str__(self):
-        return f'{self.name}{f' <- {self.parent}' if self.parent else ''}'
+        return f'{self.name}' + f' <- {self.parent}' if self.parent else ''
 
     class Meta:
         verbose_name = 'категория'
