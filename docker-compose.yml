@@ -31,7 +31,7 @@ services:
     build: ./estechfrontend
     container_name: estech_frontend
     ports:
-      - "80:80"
+      - "8080:80"
     networks:
       - webnet
 
