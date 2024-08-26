@@ -43,7 +43,11 @@ const RegisterPage = () => {
                 navigate('/');
             }
         } catch (err) {
-            setError(err.message || 'Произошла ошибка при регистрации.');
+            if (err instanceof Error) {
+                setError(err.message || 'Произошла ошибка при регистрации.');
+            } else {
+                setError('Произошла ошибка при регистрации.');
+            }
         }
 
         setLoading(false);
