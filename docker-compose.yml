@@ -1,8 +1,8 @@
-version: '3.8'
+version: '3.9'
 
 services:
   db:
-    image: postgres:13
+    image: postgres:14-alpine
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     environment:
@@ -10,56 +10,50 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     networks:
-      - app_network
+      - backend
 
   backend:
-    build: ./estechbackend
-    env_file: ./estechbackend/.env
-    command: bash -c "python manage.py migrate --noinput && gunicorn --bind 0.0.0.0:8000 config.wsgi:application"
+    build:
+      context: ./estechbackend
     volumes:
       - ./estechbackend:/app
+    env_file:
+      - ./estechbackend/.env
+    ports:
+      - "8000:8000"
     depends_on:
       - db
     networks:
-      - app_network
-    expose:
-      - "8000"
+      - backend
 
   frontend:
-    build: ./estechfrontend
+    build:
+      context: ./estechfrontend
+    ports:
+      - "80:80"
     depends_on:
       - backend
     networks:
-      - app_network
+      - frontend
 
-  nginx-proxy:
-    image: jwilder/nginx-proxy
+  nginx:
+    image: nginx:alpine
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+      - ./estechfrontend/dist:/usr/share/nginx/html
+      - /etc/letsencrypt:/etc/nginx/ssl:ro
     ports:
       - "80:80"
       - "443:443"
-    volumes:
-      - /var/run/docker.sock:/tmp/docker.sock:ro
-      - ./certs:/etc/nginx/certs
-      - ./vhost.d:/etc/nginx/vhost.d
-      - ./html:/usr/share/nginx/html
-    networks:
-      - app_network
-
-  letsencrypt:
-    image: jrcs/letsencrypt-nginx-proxy-companion
     depends_on:
-      - nginx-proxy
-    environment:
-      NGINX_PROXY_CONTAINER: nginx-proxy
-      DEFAULT_EMAIL: mdikiy069@gmail.com
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./certs:/etc/nginx/certs
+      - frontend
     networks:
-      - app_network
+      - frontend
 
 networks:
-  app_network:
+  backend:
+    driver: bridge
+  frontend:
     driver: bridge
 
 volumes:

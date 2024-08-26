@@ -1,24 +1,27 @@
-# Используем официальный образ Node.js для сборки фронтенда
-FROM node:18 as build
+# Dockerfile for Vite React TS Frontend
+FROM node:18-alpine as build
 
-# Устанавливаем рабочую директорию
+# Set working directory
 WORKDIR /app
 
-# Копируем package.json и устанавливаем зависимости
-COPY package.json /app/
-COPY package-lock.json /app/
+# Install dependencies
+COPY package.json package-lock.json ./
 RUN npm install
 
-# Копируем остальные файлы и запускаем сборку проекта
-COPY . /app/
+# Copy project files
+COPY . .
+
+# Build the project
 RUN npm run build
 
-# Используем Nginx для обслуживания статических файлов
+# Serve the application using Nginx
 FROM nginx:alpine
 COPY --from=build /app/dist /usr/share/nginx/html
 
-# Копируем файл конфигурации Nginx
+# Copy Nginx configuration
 COPY nginx.conf /etc/nginx/nginx.conf
 
-# Открываем порт для доступа к приложению
+# Expose port
 EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
