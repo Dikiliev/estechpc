@@ -1,3 +1,5 @@
+# estechfrontend/Dockerfile
+
 # Dockerfile for Vite React TS Frontend
 FROM node:18-alpine as build
 
