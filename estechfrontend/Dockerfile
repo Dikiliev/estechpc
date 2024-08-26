@@ -13,7 +13,7 @@ RUN npm install
 # Copy project files
 COPY . .
 
-ENV REACT_APP_API_BASE_URL=https://estechpc.ru/api/
+ENV VITE_API_BASE_URL=https://estechpc.ru/api/
 
 # Build the project
 RUN npm run build
