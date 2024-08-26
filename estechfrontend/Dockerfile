@@ -1,12 +1,12 @@
-# Dockerfile for Frontend (Vite React TS)
-
 # Base image
-FROM node:16 AS build
+FROM node:20-alpine AS build
 
+# Set working directory
 WORKDIR /app
 
+# Install dependencies
 COPY package.json package-lock.json ./
-RUN npm install
+RUN npm ci
 
 # Copy source code
 COPY . .
