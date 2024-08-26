@@ -27,8 +27,6 @@ services:
 
   frontend:
     build: ./estechfrontend
-    ports:
-      - "80:80"
     depends_on:
       - backend
     networks:
