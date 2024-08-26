@@ -10,7 +10,7 @@ interface LoginResponse {
 
 interface RegisterResponse {
     data: unknown;
-    error: string | null;
+    error: string | null | any;
 }
 
 interface TokenData {

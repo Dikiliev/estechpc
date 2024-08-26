@@ -51,7 +51,6 @@ const CategorySelector: React.FC = () => {
     } = useQuery({
         queryKey: ['categories', selectedCategoryId],
         queryFn: () => fetchCategories(selectedCategoryId),
-        keepPreviousData: true,
     });
 
     const {

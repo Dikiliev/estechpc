@@ -1,7 +1,7 @@
 import { TextField, Button, Box, Typography, CircularProgress, Alert } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { login } from '@api/auth.js';
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 const LoginPage = () => {
     const [username, setUsername] = useState('');
@@ -10,7 +10,7 @@ const LoginPage = () => {
     const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
 
-    const handleSubmit = async (event) => {
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         setLoading(true);
         setError(null);

@@ -1,7 +1,12 @@
-import { Typography } from '@mui/material';
-import React from 'react';
+import { Typography, SxProps } from '@mui/material';
+import React, { ReactNode } from 'react';
 
-const ErrorText = ({ children, sx = {} }) => {
+interface ErrorTextProps {
+    children: ReactNode;
+    sx?: SxProps;
+}
+
+const ErrorText: React.FC<ErrorTextProps> = ({ children, sx = {} }) => {
     return (
         <Typography color='error' variant='h6' sx={{ textAlign: 'center', mt: 4, ...sx }}>
             {children}

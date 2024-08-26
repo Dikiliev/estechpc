@@ -6,7 +6,7 @@ import Toolbar from '@mui/material/Toolbar';
 import MoreIcon from '@mui/icons-material/MoreVert';
 import { Button, Container } from '@mui/material';
 
-import SearchBar from './SearchBar';
+// import SearchBar from './SearchBar';
 import ProfileMenu from './ProfileMenu';
 import styles from './Header.module.css';
 import Logo from '@assets/favicon.svg?react';
