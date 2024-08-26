@@ -1,7 +1,7 @@
-# Используем базовый образ с Python 3.10
+# Используем базовый образ Python 3.10
 FROM python:3.10-slim
 
-# Устанавливаем рабочую директорию в контейнере
+# Устанавливаем рабочую директорию
 WORKDIR /app
 
 # Копируем файлы requirements и устанавливаем зависимости
@@ -13,14 +13,9 @@ COPY . /app/
 
 # Настраиваем переменные окружения
 ENV PYTHONUNBUFFERED=1
-ENV DJANGO_SETTINGS_MODULE=config.settings
 
 # Выполняем миграции и собираем статику
-RUN python manage.py migrate --noinput
-RUN python manage.py collectstatic --noinput
+CMD ["bash", "-c", "python manage.py migrate --noinput && python manage.py collectstatic --noinput && gunicorn --bind 0.0.0.0:8000 config.wsgi:application"]
 
-# Открываем порт для доступа к Django приложению
+# Открываем порт для доступа к приложению
 EXPOSE 8000
-
-# Команда для запуска Django сервера
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "config.wsgi:application"]
