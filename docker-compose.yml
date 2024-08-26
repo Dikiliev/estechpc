@@ -40,9 +40,10 @@ services:
   nginx:
     image: nginx:alpine
     volumes:
-      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
-      - ./estechfrontend/dist:/usr/share/nginx/html
-      - /etc/letsencrypt:/etc/nginx/ssl:ro
+    - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    - ./estechfrontend/dist:/usr/share/nginx/html
+    - /etc/letsencrypt/live/estechpc.ru/fullchain.pem:/etc/nginx/ssl/fullchain.pem:ro
+    - /etc/letsencrypt/live/estechpc.ru/privkey.pem:/etc/nginx/ssl/privkey.pem:ro
     ports:
       - "80:80"
       - "443:443"
