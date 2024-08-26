@@ -1,9 +1,5 @@
 version: '3.8'
 
-networks:
-  estechpc_network:
-    driver: bridge
-
 services:
   db:
     image: postgres:13
