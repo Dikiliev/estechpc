@@ -15,7 +15,6 @@ services:
   backend:
     build:
       context: ./estechbackend
-    container_name: backend
     volumes:
       - ./estechbackend:/app
     env_file:
