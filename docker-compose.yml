@@ -43,8 +43,8 @@ services:
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
       - ./estechfrontend/dist:/usr/share/nginx/html
       - ./estechbackend/static:/srv/estechpc/estechbackend/static
-      - /etc/letsencrypt/live/estechpc.ru/fullchain.pem:/etc/nginx/ssl/fullchain.pem:ro
-      - /etc/letsencrypt/live/estechpc.ru/privkey.pem:/etc/nginx/ssl/privkey.pem:ro
+      - /etc/letsencrypt/live/estechpc.ru-0001/fullchain.pem:/etc/nginx/ssl/fullchain.pem:ro
+      - /etc/letsencrypt/live/estechpc.ru-0001/privkey.pem:/etc/nginx/ssl/privkey.pem:ro
     ports:
       - "80:80"
       - "443:443"
