@@ -1,22 +1,13 @@
 import React from 'react';
 import { Typography, List, FormGroup, FormControlLabel, Checkbox, TextField, Box, Button } from '@mui/material';
-
-interface Filter {
-    id: number;
-    name: string;
-    values: string[];
-}
-
-export interface FiltersResponse {
-    filters: Filter[];
-}
+import { Filter, Filters, Range } from 'types/productFilters';
 
 interface FiltersPanelProps {
     filters: Filter[] | undefined;
-    selectedFilters: { [key: string]: string[] };
-    priceRange: { min: number; max: number };
-    onFilterChange: (filters: { [key: string]: string[] }) => void;
-    onPriceRangeChange: (range: { min: number; max: number }) => void;
+    selectedFilters: Filters;
+    priceRange: Range;
+    onFilterChange: (filters: Filters) => void;
+    onPriceRangeChange: (range: Range) => void;
     onApply: () => void;
 }
 

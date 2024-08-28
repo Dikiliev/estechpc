@@ -1,74 +1,30 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useParams } from 'react-router-dom';
-import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
-import { Grid, Container, Button, Drawer, Box, CircularProgress } from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
-import { fetchProducts, fetchFilters } from '@api/products';
-import FiltersPanel from '@components/filtersPanel/FiltersPanel';
+import { Grid, Container, CircularProgress } from '@mui/material';
 import ProductList from '@components/productList/ProductList';
 import LoadingBox from '@components/loadingBox/LoadingBox';
 import ErrorText from '@components/errorText/ErrorText';
 import { useProductFilters } from '@hooks/useProductFilters';
+import { useProducts } from '@hooks/useProducts';
+import { useFilters } from '@hooks/useFilters';
 import theme from '@styles/theme';
-import { useInView } from 'react-intersection-observer';
+import FiltersPanel from '@components/filtersPanel/FiltersPanel';
+import FiltersDrawer from '@pages/productsPage/FiltersDrawer';
 
 const ProductsPage: React.FC = () => {
     const { categoryId } = useParams<{ categoryId: string }>();
     const categoryID = parseInt(categoryId as string, 10);
 
     const { selectedFilters, priceRange, updateFilters, updatePriceRange } = useProductFilters();
-
     const [draftFilters, setDraftFilters] = React.useState(selectedFilters);
     const [draftPriceRange, setDraftPriceRange] = React.useState(priceRange);
-    const [isDrawerOpen, setIsDrawerOpen] = React.useState(false);
-    const { ref, inView } = useInView();
 
-    const {
-        data: filtersResponse,
-        isLoading: filtersLoading,
-        isError: filtersError,
-    } = useQuery({
-        queryKey: ['filters', categoryID],
-        queryFn: () => fetchFilters(categoryID),
-    });
-
-    const productsQuery = ['products', categoryID, selectedFilters, priceRange];
-
-    const {
-        data,
-        fetchNextPage,
-        hasNextPage,
-        isFetchingNextPage,
-        isLoading: productsLoading,
-        isError: productsError,
-    } = useInfiniteQuery({
-        queryKey: productsQuery,
-        queryFn: ({ pageParam = 1 }) => fetchProducts(categoryID, selectedFilters, priceRange, pageParam),
-        getNextPageParam: (lastPage) => {
-            const nextUrl = lastPage.next;
-            if (nextUrl) {
-                const urlParams = new URLSearchParams(nextUrl.split('?')[1]);
-                return urlParams.get('page') ? parseInt(urlParams.get('page')!) : undefined;
-            }
-            return undefined;
-        },
-        initialPageParam: 1,
-    });
-
-    useEffect(() => {
-        if (inView && hasNextPage) {
-            fetchNextPage();
-        }
-    }, [inView, hasNextPage, fetchNextPage]);
+    const { products, ref, isFetchingNextPage, productsLoading, productsError } = useProducts(categoryID, selectedFilters, priceRange);
+    const { filters, filtersLoading, filtersError } = useFilters(categoryID);
 
     const applyFilters = () => {
         updateFilters(draftFilters);
         updatePriceRange(draftPriceRange);
-        setIsDrawerOpen(false);
-    };
-
-    const toggleDrawer = (open: boolean) => () => {
-        setIsDrawerOpen(open);
     };
 
     if (productsLoading || filtersLoading) {
@@ -79,15 +35,18 @@ const ProductsPage: React.FC = () => {
         return <ErrorText>Ошибка загрузки данных.</ErrorText>;
     }
 
-    const products = data?.pages.flatMap((page) => page.results) || [];
-
     return (
         <Container maxWidth='xl' sx={{ py: 8 }}>
             <Grid container spacing={2}>
                 <Grid item xs={12} sx={{ display: { xs: 'block', sm: 'none' }, textAlign: 'right' }}>
-                    <Button startIcon={<MenuIcon />} onClick={toggleDrawer(true)}>
-                        Фильтры
-                    </Button>
+                    <FiltersDrawer
+                        filters={filters}
+                        draftFilters={draftFilters}
+                        setDraftFilters={setDraftFilters}
+                        draftPriceRange={draftPriceRange}
+                        setDraftPriceRange={setDraftPriceRange}
+                        applyFilters={applyFilters}
+                    />
                 </Grid>
 
                 <Grid
@@ -107,7 +66,7 @@ const ProductsPage: React.FC = () => {
                     }}
                 >
                     <FiltersPanel
-                        filters={filtersResponse?.filters}
+                        filters={filters}
                         selectedFilters={draftFilters}
                         priceRange={draftPriceRange}
                         onFilterChange={setDraftFilters}
@@ -117,25 +76,12 @@ const ProductsPage: React.FC = () => {
                 </Grid>
 
                 <Grid item xs={12} sm={9} sx={{ paddingTop: '0 !important', marginTop: 0 }}>
-                    <ProductList products={products} queryKeys={[productsQuery]} />
+                    <ProductList products={products} queryKeys={[[categoryID, selectedFilters, priceRange]]} />
                     <div ref={ref} style={{ textAlign: 'center', marginTop: 16 }}>
                         {isFetchingNextPage && <CircularProgress />}
                     </div>
                 </Grid>
             </Grid>
-
-            <Drawer anchor='left' open={isDrawerOpen} onClose={toggleDrawer(false)}>
-                <Box sx={{ width: 250, p: 2 }}>
-                    <FiltersPanel
-                        filters={filtersResponse?.filters}
-                        selectedFilters={draftFilters}
-                        priceRange={draftPriceRange}
-                        onFilterChange={setDraftFilters}
-                        onPriceRangeChange={setDraftPriceRange}
-                        onApply={applyFilters}
-                    />
-                </Box>
-            </Drawer>
         </Container>
     );
 };

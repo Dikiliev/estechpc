@@ -1,13 +1,17 @@
 // src/api/products.ts
 
 import apiInstance from '@api/axios';
-import { FiltersResponse } from '@components/filtersPanel/FiltersPanel';
 import { IProduct, IProductDetail, IReview } from 'types/products';
 import { createAuthAxiosInstance } from '@api/authAxios';
+import { Filter } from 'types/productFilters';
 
 interface ProductsResponse {
     results: IProduct[];
     next: string | null;
+}
+
+export interface FiltersResponse {
+    filters: Filter[];
 }
 
 const authAxios = createAuthAxiosInstance();

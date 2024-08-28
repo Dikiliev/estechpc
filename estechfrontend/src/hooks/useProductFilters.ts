@@ -1,16 +1,26 @@
-// src/hooks/useProductFilters.ts
-
 import { useState, useCallback } from 'react';
 
-export const useProductFilters = () => {
-    const [selectedFilters, setSelectedFilters] = useState<{ [key: string]: string[] }>({});
-    const [priceRange, setPriceRange] = useState({ min: 0, max: 0 });
+interface PriceRange {
+    min: number;
+    max: number;
+}
 
-    const updateFilters = useCallback((newFilters: { [key: string]: string[] }) => {
+interface Filters {
+    [key: string]: string[];
+}
+
+export const useProductFilters = () => {
+    // Состояние для выбранных фильтров и диапазона цен
+    const [selectedFilters, setSelectedFilters] = useState<Filters>({});
+    const [priceRange, setPriceRange] = useState<PriceRange>({ min: 0, max: 0 });
+
+    // Обновление фильтров
+    const updateFilters = useCallback((newFilters: Filters) => {
         setSelectedFilters(newFilters);
     }, []);
 
-    const updatePriceRange = useCallback((newPriceRange: { min: number; max: number }) => {
+    // Обновление диапазона цен
+    const updatePriceRange = useCallback((newPriceRange: PriceRange) => {
         setPriceRange(newPriceRange);
     }, []);
 
