@@ -166,21 +166,20 @@ def upload_json(request):
         form = JSONUploadForm(request.POST, request.FILES)
         if form.is_valid():
             file = form.cleaned_data['file']
-            data = json.load(file)
+            data = json.loads(file.read().decode('utf-8'))
 
-            for category_name, products in data.items():
-                category, _ = Category.objects.get_or_create(name=category_name)
+            for item in data:
+                category = Category.objects.get_or_create(name=item['category'])[0]
 
-                for item in products:
-                    Product.objects.update_or_create(
-                        name=item['name'],
-                        defaults={
-                            'category': category,
-                            'price': item['selling_price'],
-                            'count': item['count'] - item['sales_count'],
-                            'count_of_orders': item['sales_count'],
-                        }
-                    )
+                Product.objects.update_or_create(
+                    name=item['name'],
+                    defaults={
+                        'category': category,
+                        'price': item['price'],
+                        'count': item['count'],
+                        'count_of_orders': item['count_of_orders'],
+                    }
+                )
 
             return HttpResponseRedirect('/admin/products/product/')
     else:
