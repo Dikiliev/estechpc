@@ -1,12 +1,13 @@
 import React from 'react';
 import { Container, Grid, Typography } from '@mui/material';
 import { useParams, useNavigate } from 'react-router-dom';
-import { fetchChildrenCategories, useCategories, useCategoryPath } from '@hooks/useCategories';
+import { useCategories, useCategoryPath } from '@hooks/useCategories';
 import LoadingBox from '@components/loadingBox/LoadingBox';
 import ErrorText from '@components/errorText/ErrorText';
 import { Category } from 'types/category';
 import { BreadcrumbsComponent } from '@pages/categorySelector/BreadcrumbsComponent';
 import { CategoryCard } from '@pages/categorySelector/CategoryCard';
+import { fetchChildrenCategories } from '@api/category';
 
 const CategorySelector: React.FC = () => {
     const { parentId } = useParams<{ parentId: string }>();

@@ -1,32 +1,23 @@
 import { useQuery } from '@tanstack/react-query';
-import apiInstance from '@api/axios';
+import { fetchCategories, fetchCategoryPath } from '@api/category';
 import { Category, ParentCategory } from 'types/category';
 
 export const useCategories = (parentId: number | null) => {
-    return useQuery({
+    return useQuery<Category[]>({
         queryKey: ['categories', parentId],
-        queryFn: async () => {
-            const response = await apiInstance.get<Category[]>(`/products/categories/?parent_id=${parentId !== null ? parentId : 0}`);
-            return response.data;
-        },
+        queryFn: () => fetchCategories(parentId),
     });
 };
 
 export const useCategoryPath = (categoryId: number | null) => {
-    return useQuery({
+    return useQuery<ParentCategory[]>({
         queryKey: ['categoryPath', categoryId],
-        queryFn: async () => {
+        queryFn: () => {
             if (categoryId !== null) {
-                const response = await apiInstance.get<ParentCategory[]>(`/products/categories/${categoryId}/parents/?include_yourself=true`);
-                return response.data;
+                return fetchCategoryPath(categoryId);
             }
-            return [];
+            return Promise.resolve([]);
         },
         enabled: categoryId !== null,
     });
-};
-
-export const fetchChildrenCategories = async (categoryId: number) => {
-    const response = await apiInstance.get(`/products/categories/${categoryId}/children/`);
-    return response.data;
 };
