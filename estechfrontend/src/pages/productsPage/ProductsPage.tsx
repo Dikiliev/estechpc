@@ -11,7 +11,6 @@ import theme from '@styles/theme';
 import FiltersPanel from '@components/filtersPanel/FiltersPanel';
 import FiltersDrawer from '@pages/productsPage/FiltersDrawer';
 import { BreadcrumbsComponent } from '@pages/categorySelector/BreadcrumbsComponent';
-import { useCategoryPath } from '@hooks/useCategories';
 
 const ProductsPage: React.FC = () => {
     const { categoryId } = useParams<{ categoryId: string }>();
@@ -23,8 +22,6 @@ const ProductsPage: React.FC = () => {
 
     const { products, ref, isFetchingNextPage, productsLoading, productsError } = useProducts(categoryID, selectedFilters, priceRange);
     const { filters, filtersLoading, filtersError } = useFilters(categoryID);
-
-    const { data: categoryPath, isLoading: pathLoading, isError: pathError } = useCategoryPath(categoryID);
 
     const applyFilters = () => {
         updateFilters(draftFilters);
@@ -41,7 +38,7 @@ const ProductsPage: React.FC = () => {
 
     return (
         <Container maxWidth='xl' sx={{ py: 8 }}>
-            <BreadcrumbsComponent categoryPath={categoryPath} />
+            <BreadcrumbsComponent categoryId={categoryID} />
             <Grid container spacing={2}>
                 <Grid item xs={12} sx={{ display: { xs: 'block', sm: 'none' }, textAlign: 'right' }}>
                     <FiltersDrawer

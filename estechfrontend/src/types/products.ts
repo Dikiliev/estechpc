@@ -9,7 +9,7 @@ export interface IReview {
     username: string;
     text: string;
     rating: number;
-    avatar: string
+    avatar: string;
     created_at: string;
 }
 
@@ -34,6 +34,7 @@ export interface IAttribute {
 export interface IProductDetail {
     id: number;
     name: string;
+    category: number;
     short_characteristics: string;
     description: string;
     price: number;

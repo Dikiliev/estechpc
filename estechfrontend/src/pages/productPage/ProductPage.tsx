@@ -12,6 +12,7 @@ import { IProductDetail } from 'types/products';
 import ProductDetails from './ProductDetails';
 import ProductTabs from './ProductTabs';
 import LoadingBox from '@components/loadingBox/LoadingBox';
+import { BreadcrumbsComponent } from '@pages/categorySelector/BreadcrumbsComponent';
 
 const ProductPage: React.FC = () => {
     const { productId } = useParams<{ productId: string }>();
@@ -31,6 +32,7 @@ const ProductPage: React.FC = () => {
 
     return (
         <Container maxWidth='lg' sx={{ my: 4, py: 4, backgroundColor: 'background.paper', borderRadius: 2 }}>
+            <BreadcrumbsComponent categoryId={product.category} lastClickable />
             <Grid container spacing={4}>
                 <Grid item xs={12} md={6}>
                     <ProductPhotos photos={product.photos} />

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Container, Grid, Typography } from '@mui/material';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useCategories, useCategoryPath } from '@hooks/useCategories';
+import { useCategories } from '@hooks/useCategories';
 import LoadingBox from '@components/loadingBox/LoadingBox';
 import ErrorText from '@components/errorText/ErrorText';
 import { Category } from 'types/category';
@@ -15,7 +15,6 @@ const CategorySelector: React.FC = () => {
     const selectedCategoryId = parentId ? parseInt(parentId, 10) : null;
 
     const { data: categories, isLoading: categoriesLoading, isError: categoriesError } = useCategories(selectedCategoryId);
-    const { data: categoryPath } = useCategoryPath(selectedCategoryId);
 
     const handleCategoryClick = async (category: Category) => {
         try {
@@ -41,7 +40,7 @@ const CategorySelector: React.FC = () => {
 
     return (
         <Container maxWidth={'xl'} sx={{ py: 4 }}>
-            <BreadcrumbsComponent categoryPath={categoryPath} />
+            <BreadcrumbsComponent categoryId={selectedCategoryId} />
             <Typography variant='h4' gutterBottom>
                 Выберите категорию
             </Typography>
