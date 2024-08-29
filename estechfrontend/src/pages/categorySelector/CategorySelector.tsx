@@ -15,7 +15,7 @@ const CategorySelector: React.FC = () => {
     const selectedCategoryId = parentId ? parseInt(parentId, 10) : null;
 
     const { data: categories, isLoading: categoriesLoading, isError: categoriesError } = useCategories(selectedCategoryId);
-    const { data: categoryPath, isLoading: pathLoading, isError: pathError } = useCategoryPath(selectedCategoryId);
+    const { data: categoryPath } = useCategoryPath(selectedCategoryId);
 
     const handleCategoryClick = async (category: Category) => {
         try {
@@ -31,17 +31,17 @@ const CategorySelector: React.FC = () => {
         }
     };
 
-    if (categoriesLoading || pathLoading) {
+    if (categoriesLoading) {
         return <LoadingBox />;
     }
 
-    if (categoriesError || pathError) {
+    if (categoriesError) {
         return <ErrorText>Ошибка загрузки категорий.</ErrorText>;
     }
 
     return (
         <Container maxWidth={'xl'} sx={{ py: 4 }}>
-            {categoryPath && <BreadcrumbsComponent categoryPath={categoryPath} />}
+            <BreadcrumbsComponent categoryPath={categoryPath} />
             <Typography variant='h4' gutterBottom>
                 Выберите категорию
             </Typography>
