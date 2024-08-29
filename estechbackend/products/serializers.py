@@ -53,7 +53,7 @@ class ProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ['id', 'name', 'short_characteristics', 'description', 'price', 'photos',
+        fields = ['id', 'name', 'category', 'short_characteristics', 'description', 'price', 'photos',
                   'average_rating', 'count', 'count_of_reviews', 'count_of_orders', 'is_favorite']
 
     def get_is_favorite(self, obj):
