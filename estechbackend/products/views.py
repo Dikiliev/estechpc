@@ -1,6 +1,7 @@
 from django.db.models import Avg, Count, Q
 
 from rest_framework import viewsets, status
+from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -14,6 +15,7 @@ from .serializers import ProductSerializer, ProductDetailSerializer, CategorySer
 class CategoryViewSet(viewsets.ModelViewSet):
     serializer_class = CategorySerializer
     pagination_class = None
+    parser_classes = [MultiPartParser, FormParser]
 
     def get_queryset(self):
         queryset = Category.objects.all()
@@ -24,7 +26,6 @@ class CategoryViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(parent__isnull=True)
         else:
             queryset = queryset.filter(parent_id=parent_id)
-
         return queryset
 
     @action(detail=True, methods=['get'])

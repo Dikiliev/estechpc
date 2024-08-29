@@ -17,6 +17,7 @@ class ChildCategorySerializer(serializers.ModelSerializer):
 class CategorySerializer(serializers.ModelSerializer):
     parent = ChildCategorySerializer(read_only=True)
     children = ChildCategorySerializer(many=True, read_only=True, source='children_set')
+    image = serializers.ImageField(required=False)
 
     class Meta:
         model = Category
