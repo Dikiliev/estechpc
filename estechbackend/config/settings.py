@@ -36,12 +36,17 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'corsheaders',
 
+    # 'jet_django',
+
     # 'base.apps.BaseConfig',
     'users.apps.UsersConfig',
     'products.apps.ProductsConfig',
     'orders.apps.OrdersConfig',
     'community.apps.CommunityConfig',
 ]
+
+# JET_PROJECT = 'estechpc'
+# JET_TOKEN = 'f3e45232-f244-483a-801b-6cdf6ffd3d9b'
 
 JAZZMIN_SETTINGS = jazzmin_settings.SETTINGS
 JAZZMIN_UI_TWEAKS = jazzmin_settings.UI_TWEAKS
