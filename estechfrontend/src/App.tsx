@@ -1,4 +1,3 @@
-// src/App.tsx
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
@@ -10,6 +9,7 @@ import theme from '@styles/theme';
 import '@styles/global.css';
 import '@styles/globalStyles';
 
+// Страницы пользовательской части
 import TestPage from '@pages/TestPage';
 import LoginPage from '@pages/loginPage/LoginPage';
 import RegisterPage from '@pages/auth/registerPage/RegisterPage';
@@ -25,6 +25,10 @@ import CheckoutPage from '@pages/checkoutPage/CheckoutPage';
 import OrdersPage from '@pages/ordersPage/OrdersPage';
 import OrderSuccessPage from '@pages/orderSuccessPage/OrderSuccessPage';
 
+// Страницы админской панели
+import AdminSidebar from '@admin/components/sidebar/AdminSidebar';
+import CategoriesPage from '@admin/pages/categories/CategoriesPage';
+
 const App: React.FC = () => {
     return (
         <ThemeProvider theme={theme}>
@@ -32,6 +36,7 @@ const App: React.FC = () => {
             <Router>
                 <Header />
                 <Routes>
+                    {/* Пользовательские маршруты */}
                     <Route path='/' element={<Home />} />
                     <Route path='/test' element={<TestPage />} />
                     <Route path='/catalog' element={<AllProductsPage />} />
@@ -47,13 +52,21 @@ const App: React.FC = () => {
                     <Route path='/checkout' element={<CheckoutPage />} />
                     <Route path='/order-success' element={<OrderSuccessPage />} />
 
-                    <Route path='orders' element={<OrdersPage />} />
+                    <Route path='/orders' element={<OrdersPage />} />
 
                     <Route path='/profile' element={<ProfilePage />} />
 
                     <Route path='/login' element={<LoginPage />} />
                     <Route path='/register' element={<RegisterPage />} />
                     <Route path='/logout' element={<Logout />} />
+
+                    <Route path='admincategories' element={<CategoriesPage />} />
+
+                    {/* Админские маршруты */}
+                    <Route path='/admin' element={<AdminSidebar />}>
+                        <Route index element={<CategoriesPage />} />
+                        <Route path='categories' element={<CategoriesPage />} />
+                    </Route>
                 </Routes>
             </Router>
         </ThemeProvider>
