@@ -1,14 +1,10 @@
 import React, { useState, useMemo } from 'react';
-import { Button, Typography, CircularProgress, Box, Container, Avatar, FormControl, InputLabel, Select } from '@mui/material';
+import { Button, Typography, Container } from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
 import { useCategories, useCreateCategory, useUpdateCategory, useDeleteCategory, Category, CategoryFormData } from '@admin/api/category';
 
-import CategoryActions from './CategoryActions';
 import { filterData, sortData } from '@admin/utils/dataFilters';
 import DataFilters from '@admin/components/dataFilters/DataFilters';
-import DataFormDialog from '@admin/components/dataFormDialog/DataFormDialog';
-import DataTable from '@admin/components/dataTable/DataTable';
-import MenuItem from '@mui/material/MenuItem';
 import CategoryTable from '@admin/pages/categories/CategoryTable';
 import CategoryFormDialog from '@admin/pages/categories/CategoryFormDialog';
 import LoadingBox from '@components/loadingBox/LoadingBox';
@@ -57,6 +53,8 @@ const CategoriesPage: React.FC = () => {
     const handleImageChange = (file: File | null, category?: Category) => {
         if (category) {
             const formData = new FormData();
+            formData.append('name', category.name);
+            if (category.parent) formData.append('parent', String(category.parent.id));
             formData.append('image', file!);
 
             updateCategoryMutation.mutate({ id: category.id, category: formData });
@@ -71,14 +69,23 @@ const CategoriesPage: React.FC = () => {
     const handleSave = () => {
         const formData = new FormData();
         formData.append('name', categoryData.name);
-        if (categoryData.parent) formData.append('parent', String(categoryData.parent.id));
-        if (categoryData.image) formData.append('image', categoryData.image);
+
+        if (categoryData.parent) {
+            formData.append('parent_id', String(categoryData.parent.id));
+        } else {
+            formData.append('parent_id', '');
+        }
+
+        if (categoryData.image) {
+            formData.append('image', categoryData.image);
+        }
 
         if (editingCategory) {
             updateCategoryMutation.mutate({ id: editingCategory.id, category: formData });
         } else {
             createCategoryMutation.mutate(formData);
         }
+
         handleClose();
     };
 
