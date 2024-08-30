@@ -15,7 +15,7 @@ const CategoryActions: React.FC<CategoryActionsProps> = ({ category, onEdit, onD
             <Button variant='outlined' color='primary' startIcon={<EditIcon />} sx={{ mr: 1 }} onClick={() => onEdit(category)}>
                 Редактировать
             </Button>
-            <Button variant='outlined' color='secondary' startIcon={<DeleteIcon />} onClick={() => onDelete(category.id)}>
+            <Button variant='outlined' color='error' startIcon={<DeleteIcon />} onClick={() => onDelete(category.id)}>
                 Удалить
             </Button>
         </>

@@ -7,7 +7,6 @@ export interface Category {
     id: number;
     name: string;
     parent: Category | null;
-    description: string;
     image: string | null;
     created_at: string;
     updated_at: string;
@@ -16,7 +15,6 @@ export interface Category {
 export interface CategoryFormData {
     name: string;
     parent: Category | null;
-    description: string;
     image: File | null; // Здесь тип File, так как это состояние на стороне клиента
 }
 

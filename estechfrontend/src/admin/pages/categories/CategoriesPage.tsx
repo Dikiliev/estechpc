@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Button, Typography, CircularProgress, Box, Container } from '@mui/material';
+import React, { useState, useMemo } from 'react';
+import { Button, Typography, CircularProgress, Box, Container, TextField, MenuItem } from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
 import { useCategories, useCreateCategory, useUpdateCategory, useDeleteCategory, Category, CategoryFormData } from '@admin/api/category';
 import CategoryTable from './CategoryTable';
@@ -16,9 +16,11 @@ const CategoriesPage: React.FC = () => {
     const [categoryData, setCategoryData] = useState<CategoryFormData>({
         name: '',
         parent: null,
-        description: '',
         image: null,
     });
+
+    const [filterBy, setFilterBy] = useState<string>('all');
+    const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
 
     const handleOpen = (category?: Category) => {
         if (category) {
@@ -26,15 +28,13 @@ const CategoriesPage: React.FC = () => {
             setCategoryData({
                 name: category.name,
                 parent: category.parent,
-                description: category.description,
-                image: null, // Изображение загружается заново
+                image: null,
             });
         } else {
             setEditingCategory(null);
             setCategoryData({
                 name: '',
                 parent: null,
-                description: '',
                 image: null,
             });
         }
@@ -55,7 +55,6 @@ const CategoriesPage: React.FC = () => {
     const handleSave = () => {
         const formData = new FormData();
         formData.append('name', categoryData.name);
-        formData.append('description', categoryData.description);
         if (categoryData.parent) formData.append('parent', String(categoryData.parent.id));
         if (categoryData.image) formData.append('image', categoryData.image);
 
@@ -72,6 +71,22 @@ const CategoriesPage: React.FC = () => {
             deleteCategoryMutation.mutate(id);
         }
     };
+
+    // Фильтрация и сортировка категорий
+    const filteredCategories = useMemo(() => {
+        let filtered = categories || [];
+
+        if (filterBy === 'noImage') {
+            filtered = filtered.filter((category) => !category.image);
+        } else if (filterBy === 'incomplete') {
+            filtered = filtered.filter((category) => !category.name || !category.image);
+        }
+
+        return filtered.sort((a, b) => {
+            const compare = a.name.localeCompare(b.name);
+            return sortOrder === 'asc' ? compare : -compare;
+        });
+    }, [categories, filterBy, sortOrder]);
 
     if (isLoading) {
         return (
@@ -97,7 +112,25 @@ const CategoriesPage: React.FC = () => {
             <Button variant='contained' color='primary' startIcon={<AddIcon />} sx={{ mb: 2 }} onClick={() => handleOpen()}>
                 Добавить категорию
             </Button>
-            <CategoryTable categories={categories || []} onEdit={handleOpen} onDelete={handleDelete} />
+            <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+                <TextField select label='Фильтр' value={filterBy} onChange={(e) => setFilterBy(e.target.value)} sx={{ minWidth: 200 }}>
+                    <MenuItem value='all'>Все категории</MenuItem>
+                    <MenuItem value='noImage'>Без изображения</MenuItem>
+                    <MenuItem value='incomplete'>Неполные данные</MenuItem>
+                </TextField>
+
+                <TextField
+                    select
+                    label='Сортировка'
+                    value={sortOrder}
+                    onChange={(e) => setSortOrder(e.target.value as 'asc' | 'desc')}
+                    sx={{ minWidth: 200 }}
+                >
+                    <MenuItem value='asc'>По алфавиту (А-Я)</MenuItem>
+                    <MenuItem value='desc'>По алфавиту (Я-А)</MenuItem>
+                </TextField>
+            </Box>
+            <CategoryTable categories={filteredCategories} onEdit={handleOpen} onDelete={handleDelete} />
             <CategoryFormDialog
                 open={open}
                 categories={categories || []}

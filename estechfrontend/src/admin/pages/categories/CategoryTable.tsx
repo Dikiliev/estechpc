@@ -17,7 +17,6 @@ const CategoryTable: React.FC<CategoryTableProps> = ({ categories, onEdit, onDel
                     <TableRow>
                         <TableCell>Название</TableCell>
                         <TableCell>Родительская категория</TableCell>
-                        <TableCell>Описание</TableCell>
                         <TableCell align='right'>Действия</TableCell>
                     </TableRow>
                 </TableHead>
@@ -26,7 +25,6 @@ const CategoryTable: React.FC<CategoryTableProps> = ({ categories, onEdit, onDel
                         <TableRow key={category.id}>
                             <TableCell>{category.name}</TableCell>
                             <TableCell>{category.parent?.name || 'Нет'}</TableCell>
-                            <TableCell>{category.description}</TableCell>
                             <TableCell align='right'>
                                 <CategoryActions category={category} onEdit={onEdit} onDelete={onDelete} />
                             </TableCell>
