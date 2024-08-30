@@ -70,14 +70,6 @@ const CategoryFormDialog: React.FC<CategoryFormDialogProps> = ({
                     value={categoryData.name}
                     onChange={(e) => setCategoryData({ ...categoryData, name: e.target.value })}
                 />
-                <TextField
-                    margin='dense'
-                    label='Описание'
-                    type='text'
-                    fullWidth
-                    value={categoryData.description}
-                    onChange={(e) => setCategoryData({ ...categoryData, description: e.target.value })}
-                />
                 <FormControl fullWidth margin='dense'>
                     <InputLabel id='parent-category-label'>Родительская категория</InputLabel>
                     <Select

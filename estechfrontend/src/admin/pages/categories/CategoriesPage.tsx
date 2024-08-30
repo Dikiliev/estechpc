@@ -45,11 +45,13 @@ const CategoriesPage: React.FC = () => {
         setOpen(false);
     };
 
-    const handleImageChange = (file: File | null) => {
-        setCategoryData((prev) => ({
-            ...prev,
-            image: file,
-        }));
+    const handleImageChange = (category: Category, file: File) => {
+        const formData = new FormData();
+        formData.append('name', category.name);
+        if (category.parent) formData.append('parent', String(category.parent.id));
+        formData.append('image', file);
+
+        updateCategoryMutation.mutate({ id: category.id, category: formData });
     };
 
     const handleSave = () => {
@@ -130,7 +132,7 @@ const CategoriesPage: React.FC = () => {
                     <MenuItem value='desc'>По алфавиту (Я-А)</MenuItem>
                 </TextField>
             </Box>
-            <CategoryTable categories={filteredCategories} onEdit={handleOpen} onDelete={handleDelete} />
+            <CategoryTable categories={filteredCategories} onEdit={handleOpen} onDelete={handleDelete} onImageChange={handleImageChange} />
             <CategoryFormDialog
                 open={open}
                 categories={categories || []}
@@ -139,7 +141,7 @@ const CategoriesPage: React.FC = () => {
                 onClose={handleClose}
                 onSave={handleSave}
                 setCategoryData={setCategoryData}
-                onImageChange={handleImageChange}
+                onImageChange={(file) => setCategoryData((prev) => ({ ...prev, image: file }))}
             />
         </Container>
     );
