@@ -15,14 +15,15 @@ class ChildCategorySerializer(serializers.ModelSerializer):
         fields = ['id', 'name']
 
 class CategorySerializer(serializers.ModelSerializer):
-    parent = ChildCategorySerializer(read_only=True)
-    children = ChildCategorySerializer(many=True, read_only=True, source='children_set')
+    # `parent_id` для записи и `parent` для чтения
+    parent_id = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all(), source='parent', write_only=True, required=False, allow_null=True)
+    parent = ParentCategorySerializer(read_only=True)
+    children = ParentCategorySerializer(many=True, read_only=True, source='children_set')
     image = serializers.ImageField(required=False)
 
     class Meta:
         model = Category
-        fields = '__all__'
-
+        fields = ['id', 'name', 'parent_id', 'parent', 'children', 'image']
 
 class ProductPhotoSerializer(serializers.ModelSerializer):
     class Meta:
