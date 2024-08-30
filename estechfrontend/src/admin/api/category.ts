@@ -28,7 +28,11 @@ const getCategories = async (): Promise<Category[]> => {
 
 // Создание новой категории
 const createCategory = async (category: FormData): Promise<Category> => {
-    const response = await authAxios.post<Category>('products/categories/', category);
+    const response = await authAxios.post<Category>('products/categories/', category, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },
+    });
     return response.data;
 };
 

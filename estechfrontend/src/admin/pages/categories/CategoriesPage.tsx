@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Typography, CircularProgress, Box } from '@mui/material';
+import { Button, Typography, CircularProgress, Box, Container } from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
 import { useCategories, useCreateCategory, useUpdateCategory, useDeleteCategory, Category, CategoryFormData } from '@admin/api/category';
 import CategoryTable from './CategoryTable';
@@ -90,7 +90,7 @@ const CategoriesPage: React.FC = () => {
     }
 
     return (
-        <div>
+        <Container maxWidth={'xl'}>
             <Typography variant='h4' gutterBottom>
                 Управление категориями
             </Typography>
@@ -108,7 +108,7 @@ const CategoriesPage: React.FC = () => {
                 setCategoryData={setCategoryData}
                 onImageChange={handleImageChange}
             />
-        </div>
+        </Container>
     );
 };
 

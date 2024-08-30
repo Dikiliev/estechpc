@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, useLocation, Outlet } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 
@@ -29,38 +29,43 @@ import OrderSuccessPage from '@pages/orderSuccessPage/OrderSuccessPage';
 import AdminSidebar from '@admin/components/sidebar/AdminSidebar';
 import CategoriesPage from '@admin/pages/categories/CategoriesPage';
 
+const BaseLayout: React.FC = () => {
+    const location = useLocation();
+
+    // Определяем, находится ли пользователь на админском маршруте
+    const isAdminRoute = location.pathname.startsWith('/admin');
+    return (
+        <>
+            {!isAdminRoute && <Header />}
+            <Outlet />
+        </>
+    );
+};
+
 const App: React.FC = () => {
     return (
         <ThemeProvider theme={theme}>
             <CssBaseline />
             <Router>
-                <Header />
                 <Routes>
                     {/* Пользовательские маршруты */}
-                    <Route path='/' element={<Home />} />
-                    <Route path='/test' element={<TestPage />} />
-                    <Route path='/catalog' element={<AllProductsPage />} />
-
-                    <Route path='/categories/:parentId?' element={<CategorySelector />} />
-                    <Route path='/categories/:categoryId/products' element={<ProductsPage />} />
-
-                    <Route path='/favorites' element={<FavoritesPage />} />
-
-                    <Route path='/products/:productId' element={<ProductPage />} />
-
-                    <Route path='/cart' element={<CartPage />} />
-                    <Route path='/checkout' element={<CheckoutPage />} />
-                    <Route path='/order-success' element={<OrderSuccessPage />} />
-
-                    <Route path='/orders' element={<OrdersPage />} />
-
-                    <Route path='/profile' element={<ProfilePage />} />
-
-                    <Route path='/login' element={<LoginPage />} />
-                    <Route path='/register' element={<RegisterPage />} />
-                    <Route path='/logout' element={<Logout />} />
-
-                    <Route path='admincategories' element={<CategoriesPage />} />
+                    <Route path='/' element={<BaseLayout />}>
+                        <Route index element={<Home />} />
+                        <Route path='test' element={<TestPage />} />
+                        <Route path='catalog' element={<AllProductsPage />} />
+                        <Route path='categories/:parentId?' element={<CategorySelector />} />
+                        <Route path='categories/:categoryId/products' element={<ProductsPage />} />
+                        <Route path='favorites' element={<FavoritesPage />} />
+                        <Route path='products/:productId' element={<ProductPage />} />
+                        <Route path='cart' element={<CartPage />} />
+                        <Route path='checkout' element={<CheckoutPage />} />
+                        <Route path='order-success' element={<OrderSuccessPage />} />
+                        <Route path='orders' element={<OrdersPage />} />
+                        <Route path='profile' element={<ProfilePage />} />
+                        <Route path='login' element={<LoginPage />} />
+                        <Route path='register' element={<RegisterPage />} />
+                        <Route path='logout' element={<Logout />} />
+                    </Route>
 
                     {/* Админские маршруты */}
                     <Route path='/admin' element={<AdminSidebar />}>
