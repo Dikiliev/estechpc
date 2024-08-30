@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import {
     Dialog,
     DialogActions,
@@ -36,8 +36,29 @@ const CategoryFormDialog: React.FC<CategoryFormDialogProps> = ({
     setCategoryData,
     onImageChange,
 }) => {
+    const inputFileRef = useRef<HTMLInputElement>(null);
+
+    const handleSave = () => {
+        if (!categoryData.name.trim()) {
+            alert('Пожалуйста, введите название категории.');
+            return;
+        }
+        if (categoryData.parent && categoryData.parent.id === editingCategory?.id) {
+            alert('Категория не может быть родительской самой себе.');
+            return;
+        }
+        onSave();
+    };
+
+    const handleClose = () => {
+        onClose();
+        if (inputFileRef.current) {
+            inputFileRef.current.value = ''; // Очистка поля выбора файла
+        }
+    };
+
     return (
-        <Dialog open={open} onClose={onClose} fullWidth maxWidth='sm'>
+        <Dialog open={open} onClose={handleClose} fullWidth maxWidth='sm'>
             <DialogTitle>{editingCategory ? 'Редактировать категорию' : 'Добавить категорию'}</DialogTitle>
             <DialogContent>
                 <TextField
@@ -82,19 +103,26 @@ const CategoryFormDialog: React.FC<CategoryFormDialogProps> = ({
                 </FormControl>
                 <Button variant='contained' component='label' sx={{ mt: 2 }}>
                     Загрузить изображение
-                    <input type='file' hidden accept='image/*' onChange={(e) => onImageChange(e.target.files ? e.target.files[0] : null)} />
+                    <input
+                        type='file'
+                        hidden
+                        accept='image/*'
+                        onChange={(e) => onImageChange(e.target.files ? e.target.files[0] : null)}
+                        ref={inputFileRef}
+                    />
                 </Button>
                 {categoryData.image && (
                     <Box sx={{ mt: 2 }}>
                         <Typography variant='body2'>{categoryData.image.name}</Typography>
+                        <img src={URL.createObjectURL(categoryData.image)} alt='Preview' style={{ maxHeight: '150px', marginTop: '10px' }} />
                     </Box>
                 )}
             </DialogContent>
             <DialogActions>
-                <Button onClick={onClose} color='secondary'>
+                <Button onClick={handleClose} color='secondary'>
                     Отмена
                 </Button>
-                <Button onClick={onSave} color='primary'>
+                <Button onClick={handleSave} color='primary'>
                     Сохранить
                 </Button>
             </DialogActions>
