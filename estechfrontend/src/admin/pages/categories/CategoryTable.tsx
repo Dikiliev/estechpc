@@ -1,73 +1,49 @@
-import React, { useRef } from 'react';
-import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Avatar } from '@mui/material';
+import React from 'react';
+import { Avatar } from '@mui/material';
 import { Category } from '@admin/api/category';
 import CategoryActions from './CategoryActions';
+import DataTable from '@admin/components/dataTable/DataTable';
 
 interface CategoryTableProps {
     categories: Category[];
     onEdit: (category: Category) => void;
     onDelete: (id: number) => void;
-    onImageChange: (category: Category, file: File) => void; // Новый пропс для изменения изображения
+    onImageChange: (file: File | null, category?: Category) => void;
 }
 
 const CategoryTable: React.FC<CategoryTableProps> = ({ categories, onEdit, onDelete, onImageChange }) => {
-    const fileInputRefs = useRef<{ [key: number]: HTMLInputElement | null }>({});
-
-    const handleImageClick = (categoryId: number) => {
-        if (fileInputRefs.current[categoryId]) {
-            fileInputRefs.current[categoryId]!.click(); // Открытие диалога выбора файла
-        }
-    };
-
-    const handleFileChange = (category: Category, event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (file) {
-            onImageChange(category, file);
-        }
-    };
-
     return (
-        <TableContainer component={Paper}>
-            <Table>
-                <TableHead>
-                    <TableRow>
-                        <TableCell>Изображение</TableCell>
-                        <TableCell>Название</TableCell>
-                        <TableCell>Родительская категория</TableCell>
-                        <TableCell align='right'>Действия</TableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {categories.map((category) => (
-                        <TableRow key={category.id}>
-                            <TableCell>
-                                <input
-                                    type='file'
-                                    style={{ display: 'none' }}
-                                    ref={(el) => (fileInputRefs.current[category.id] = el)}
-                                    accept='image/*'
-                                    onChange={(event) => handleFileChange(category, event)}
-                                />
-                                <Avatar
-                                    alt={category.name}
-                                    src={category.image || undefined}
-                                    variant='rounded'
-                                    sx={{ width: 56, height: 56, cursor: 'pointer' }}
-                                    onClick={() => handleImageClick(category.id)}
-                                >
-                                    {!category.image && 'N/A'}
-                                </Avatar>
-                            </TableCell>
-                            <TableCell>{category.name}</TableCell>
-                            <TableCell>{category.parent?.name || 'Нет'}</TableCell>
-                            <TableCell align='right'>
-                                <CategoryActions category={category} onEdit={onEdit} onDelete={onDelete} />
-                            </TableCell>
-                        </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
-        </TableContainer>
+        <DataTable<Category>
+            data={categories}
+            columns={[
+                {
+                    label: 'Изображение',
+                    accessor: (category) => (
+                        <Avatar
+                            alt={category.name}
+                            src={category.image || undefined}
+                            variant='square'
+                            sx={{ width: 56, height: 56, cursor: 'pointer' }}
+                            onClick={() => {
+                                const fileInput = document.createElement('input');
+                                fileInput.type = 'file';
+                                fileInput.accept = 'image/*';
+                                fileInput.onchange = (e: Event) => {
+                                    const target = e.target as HTMLInputElement;
+                                    onImageChange(target.files ? target.files[0] : null, category);
+                                };
+                                fileInput.click();
+                            }}
+                        >
+                            {!category.image && 'N/A'}
+                        </Avatar>
+                    ),
+                },
+                { label: 'Название', accessor: 'name' },
+                { label: 'Родительская категория', accessor: (category) => category.parent?.name || 'Нет' },
+            ]}
+            renderActions={(category) => <CategoryActions category={category} onEdit={onEdit} onDelete={() => onDelete(category.id)} />}
+        />
     );
 };
 

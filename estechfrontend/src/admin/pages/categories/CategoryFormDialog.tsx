@@ -1,24 +1,12 @@
 import React, { useRef } from 'react';
-import {
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
-    Button,
-    TextField,
-    MenuItem,
-    Select,
-    InputLabel,
-    FormControl,
-    Box,
-    Typography,
-} from '@mui/material';
+import { Button, MenuItem, Select, InputLabel, FormControl, Box, Typography } from '@mui/material';
 import { Category, CategoryFormData } from '@admin/api/category';
+import DataFormDialog from '@admin/components/dataFormDialog/DataFormDialog';
 
 interface CategoryFormDialogProps {
     open: boolean;
     categoryData: Omit<Category, 'id' | 'created_at' | 'updated_at' | 'image'> & { image: File | null };
-    categories: Category[];
+    categories: Category[] | undefined;
     editingCategory: Category | null;
     onClose: () => void;
     onSave: () => void;
@@ -58,67 +46,51 @@ const CategoryFormDialog: React.FC<CategoryFormDialogProps> = ({
     };
 
     return (
-        <Dialog open={open} onClose={handleClose} fullWidth maxWidth='sm'>
-            <DialogTitle>{editingCategory ? 'Редактировать категорию' : 'Добавить категорию'}</DialogTitle>
-            <DialogContent>
-                <TextField
-                    autoFocus
-                    margin='dense'
-                    label='Название'
-                    type='text'
-                    fullWidth
-                    value={categoryData.name}
-                    onChange={(e) => setCategoryData({ ...categoryData, name: e.target.value })}
-                />
-                <FormControl fullWidth margin='dense'>
-                    <InputLabel id='parent-category-label'>Родительская категория</InputLabel>
-                    <Select
-                        labelId='parent-category-label'
-                        value={categoryData.parent?.id || ''}
-                        label='Родительская категория'
-                        onChange={(e) =>
-                            setCategoryData({
-                                ...categoryData,
-                                parent: categories.find((cat) => cat.id === e.target.value) || null,
-                            })
-                        }
-                    >
-                        <MenuItem value=''>
-                            <em>Нет</em>
-                        </MenuItem>
-                        {categories.map((cat) => (
-                            <MenuItem key={cat.id} value={cat.id}>
-                                {cat.name}
+        <DataFormDialog<CategoryFormData>
+            open={open}
+            title={editingCategory ? 'Редактировать категорию' : 'Добавить категорию'}
+            data={categoryData}
+            onClose={handleClose}
+            onSave={handleSave}
+            onChange={(key, value) => setCategoryData((prev) => ({ ...prev, [key]: value }))}
+            fields={[{ key: 'name', label: 'Название' }]}
+            additionalContent={
+                <>
+                    <Button variant='contained' component='label' sx={{ mt: 2 }}>
+                        Загрузить изображение
+                        <input type='file' hidden accept='image/*' onChange={(e) => onImageChange(e.target.files ? e.target.files[0] : null)} />
+                    </Button>
+                    {categoryData.image && (
+                        <Box sx={{ mt: 2 }}>
+                            <Typography variant='body2'>{categoryData.image.name}</Typography>
+                        </Box>
+                    )}
+                    <FormControl fullWidth margin='dense'>
+                        <InputLabel id='parent-category-label'>Родительская категория</InputLabel>
+                        <Select
+                            labelId='parent-category-label'
+                            value={categoryData.parent?.id || ''}
+                            label='Родительская категория'
+                            onChange={(e) =>
+                                setCategoryData({
+                                    ...categoryData,
+                                    parent: categories?.find((cat) => cat.id === e.target.value) || null,
+                                })
+                            }
+                        >
+                            <MenuItem value=''>
+                                <em>Нет</em>
                             </MenuItem>
-                        ))}
-                    </Select>
-                </FormControl>
-                <Button variant='contained' component='label' sx={{ mt: 2 }}>
-                    Загрузить изображение
-                    <input
-                        type='file'
-                        hidden
-                        accept='image/*'
-                        onChange={(e) => onImageChange(e.target.files ? e.target.files[0] : null)}
-                        ref={inputFileRef}
-                    />
-                </Button>
-                {categoryData.image && (
-                    <Box sx={{ mt: 2 }}>
-                        <Typography variant='body2'>{categoryData.image.name}</Typography>
-                        <img src={URL.createObjectURL(categoryData.image)} alt='Preview' style={{ maxHeight: '150px', marginTop: '10px' }} />
-                    </Box>
-                )}
-            </DialogContent>
-            <DialogActions>
-                <Button onClick={handleClose} color='error'>
-                    Отмена
-                </Button>
-                <Button onClick={handleSave} color='primary'>
-                    Сохранить
-                </Button>
-            </DialogActions>
-        </Dialog>
+                            {categories?.map((cat) => (
+                                <MenuItem key={cat.id} value={cat.id}>
+                                    {cat.name}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                </>
+            }
+        />
     );
 };
 

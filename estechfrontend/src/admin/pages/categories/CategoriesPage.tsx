@@ -1,9 +1,18 @@
 import React, { useState, useMemo } from 'react';
-import { Button, Typography, CircularProgress, Box, Container, TextField, MenuItem } from '@mui/material';
+import { Button, Typography, CircularProgress, Box, Container, Avatar, FormControl, InputLabel, Select } from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
 import { useCategories, useCreateCategory, useUpdateCategory, useDeleteCategory, Category, CategoryFormData } from '@admin/api/category';
-import CategoryTable from './CategoryTable';
-import CategoryFormDialog from './CategoryFormDialog';
+
+import CategoryActions from './CategoryActions';
+import { filterData, sortData } from '@admin/utils/dataFilters';
+import DataFilters from '@admin/components/dataFilters/DataFilters';
+import DataFormDialog from '@admin/components/dataFormDialog/DataFormDialog';
+import DataTable from '@admin/components/dataTable/DataTable';
+import MenuItem from '@mui/material/MenuItem';
+import CategoryTable from '@admin/pages/categories/CategoryTable';
+import CategoryFormDialog from '@admin/pages/categories/CategoryFormDialog';
+import LoadingBox from '@components/loadingBox/LoadingBox';
+import ErrorText from '@components/errorText/ErrorText';
 
 const CategoriesPage: React.FC = () => {
     const { data: categories, isLoading, isError } = useCategories();
@@ -45,13 +54,18 @@ const CategoriesPage: React.FC = () => {
         setOpen(false);
     };
 
-    const handleImageChange = (category: Category, file: File) => {
-        const formData = new FormData();
-        formData.append('name', category.name);
-        if (category.parent) formData.append('parent', String(category.parent.id));
-        formData.append('image', file);
+    const handleImageChange = (file: File | null, category?: Category) => {
+        if (category) {
+            const formData = new FormData();
+            formData.append('image', file!);
 
-        updateCategoryMutation.mutate({ id: category.id, category: formData });
+            updateCategoryMutation.mutate({ id: category.id, category: formData });
+        } else {
+            setCategoryData((prev) => ({
+                ...prev,
+                image: file,
+            }));
+        }
     };
 
     const handleSave = () => {
@@ -74,74 +88,54 @@ const CategoriesPage: React.FC = () => {
         }
     };
 
-    // Фильтрация и сортировка категорий
     const filteredCategories = useMemo(() => {
-        let filtered = categories || [];
-
-        if (filterBy === 'noImage') {
-            filtered = filtered.filter((category) => !category.image);
-        } else if (filterBy === 'incomplete') {
-            filtered = filtered.filter((category) => !category.name || !category.image);
-        }
-
-        return filtered.sort((a, b) => {
-            const compare = a.name.localeCompare(b.name);
-            return sortOrder === 'asc' ? compare : -compare;
+        const filtered = filterData(categories || [], filterBy, (category) => {
+            if (filterBy === 'noImage') return !category.image;
+            if (filterBy === 'incomplete') return !category.name || !category.image;
+            return true;
         });
+
+        return sortData(filtered, sortOrder, (category) => category.name);
     }, [categories, filterBy, sortOrder]);
 
     if (isLoading) {
-        return (
-            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-                <CircularProgress />
-            </Box>
-        );
+        return <LoadingBox />;
     }
 
     if (isError) {
-        return (
-            <Typography variant='h6' color='error'>
-                Ошибка загрузки категорий
-            </Typography>
-        );
+        return <ErrorText>Ошибка загрузки категорий</ErrorText>;
     }
 
     return (
-        <Container maxWidth={'xl'}>
+        <Container maxWidth='xl'>
             <Typography variant='h4' gutterBottom>
                 Управление категориями
             </Typography>
             <Button variant='contained' color='primary' startIcon={<AddIcon />} sx={{ mb: 2 }} onClick={() => handleOpen()}>
                 Добавить категорию
             </Button>
-            <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
-                <TextField select label='Фильтр' value={filterBy} onChange={(e) => setFilterBy(e.target.value)} sx={{ minWidth: 200 }}>
-                    <MenuItem value='all'>Все категории</MenuItem>
-                    <MenuItem value='noImage'>Без изображения</MenuItem>
-                    <MenuItem value='incomplete'>Неполные данные</MenuItem>
-                </TextField>
-
-                <TextField
-                    select
-                    label='Сортировка'
-                    value={sortOrder}
-                    onChange={(e) => setSortOrder(e.target.value as 'asc' | 'desc')}
-                    sx={{ minWidth: 200 }}
-                >
-                    <MenuItem value='asc'>По алфавиту (А-Я)</MenuItem>
-                    <MenuItem value='desc'>По алфавиту (Я-А)</MenuItem>
-                </TextField>
-            </Box>
+            <DataFilters
+                filterBy={filterBy}
+                sortOrder={sortOrder}
+                onFilterChange={setFilterBy}
+                onSortOrderChange={setSortOrder}
+                filters={[
+                    { label: 'Все категории', value: 'all' },
+                    { label: 'Без изображения', value: 'noImage' },
+                    { label: 'Неполные данные', value: 'incomplete' },
+                ]}
+            />
             <CategoryTable categories={filteredCategories} onEdit={handleOpen} onDelete={handleDelete} onImageChange={handleImageChange} />
+
             <CategoryFormDialog
                 open={open}
-                categories={categories || []}
                 categoryData={categoryData}
+                categories={categories}
                 editingCategory={editingCategory}
                 onClose={handleClose}
                 onSave={handleSave}
                 setCategoryData={setCategoryData}
-                onImageChange={(file) => setCategoryData((prev) => ({ ...prev, image: file }))}
+                onImageChange={handleImageChange}
             />
         </Container>
     );
