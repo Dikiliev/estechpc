@@ -1,19 +1,19 @@
 import React from 'react';
 import { Avatar } from '@mui/material';
-import { Category } from '@admin/api/category';
 import CategoryActions from './CategoryActions';
 import DataTable from '@admin/components/dataTable/DataTable';
+import { ICategory } from '@admin/types/category';
 
 interface CategoryTableProps {
-    categories: Category[];
-    onEdit: (category: Category) => void;
+    categories: ICategory[];
+    onEdit: (category: ICategory) => void;
     onDelete: (id: number) => void;
-    onImageChange: (file: File | null, category?: Category) => void;
+    onImageChange: (file: File | null, category?: ICategory) => void;
 }
 
 const CategoryTable: React.FC<CategoryTableProps> = ({ categories, onEdit, onDelete, onImageChange }) => {
     return (
-        <DataTable<Category>
+        <DataTable<ICategory>
             data={categories}
             columns={[
                 {
@@ -22,8 +22,8 @@ const CategoryTable: React.FC<CategoryTableProps> = ({ categories, onEdit, onDel
                         <Avatar
                             alt={category.name}
                             src={category.image || undefined}
-                            variant='square'
-                            sx={{ width: 56, height: 56, cursor: 'pointer' }}
+                            variant='rounded'
+                            sx={{ width: 70, height: 60, cursor: 'pointer' }}
                             onClick={() => {
                                 const fileInput = document.createElement('input');
                                 fileInput.type = 'file';

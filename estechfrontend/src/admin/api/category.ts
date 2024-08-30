@@ -1,32 +1,24 @@
 import { useQuery, useMutation, useQueryClient, UseMutationResult, UseQueryResult } from '@tanstack/react-query';
 import { createAuthAxiosInstance } from '@api/authAxios';
+import { ICategory } from '@admin/types/category';
 
 const authAxios = createAuthAxiosInstance();
 
-export interface Category {
-    id: number;
-    name: string;
-    parent: Category | null;
-    image: string | null;
-    created_at: string;
-    updated_at: string;
-}
-
 export interface CategoryFormData {
     name: string;
-    parent: Category | null;
+    parent: ICategory | null;
     image: File | null; // Здесь тип File, так как это состояние на стороне клиента
 }
 
 // Получение списка категорий
-const getCategories = async (): Promise<Category[]> => {
-    const response = await authAxios.get<Category[]>('products/categories/');
+const getCategories = async (): Promise<ICategory[]> => {
+    const response = await authAxios.get<ICategory[]>('products/categories/');
     return response.data;
 };
 
 // Создание новой категории
-const createCategory = async (category: FormData): Promise<Category> => {
-    const response = await authAxios.post<Category>('products/categories/', category, {
+const createCategory = async (category: FormData): Promise<ICategory> => {
+    const response = await authAxios.post<ICategory>('products/categories/', category, {
         headers: {
             'Content-Type': 'multipart/form-data',
         },
@@ -35,8 +27,8 @@ const createCategory = async (category: FormData): Promise<Category> => {
 };
 
 // Обновление существующей категории
-const updateCategory = async ({ id, category }: { id: number; category: FormData }): Promise<Category> => {
-    const response = await authAxios.put<Category>(`products/categories/${id}/`, category, {
+const updateCategory = async ({ id, category }: { id: number; category: FormData }): Promise<ICategory> => {
+    const response = await authAxios.put<ICategory>(`products/categories/${id}/`, category, {
         headers: {
             'Content-Type': 'multipart/form-data',
         },
@@ -50,15 +42,15 @@ const deleteCategory = async (id: number): Promise<void> => {
 };
 
 // Хук для получения категорий
-export const useCategories = (): UseQueryResult<Category[], Error> => {
-    return useQuery<Category[], Error>({
+export const useCategories = (): UseQueryResult<ICategory[], Error> => {
+    return useQuery<ICategory[], Error>({
         queryKey: ['categories'],
         queryFn: getCategories,
     });
 };
 
 // Хук для создания новой категории
-export const useCreateCategory = (): UseMutationResult<Category, Error, FormData> => {
+export const useCreateCategory = (): UseMutationResult<ICategory, Error, FormData> => {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: createCategory,
@@ -69,7 +61,7 @@ export const useCreateCategory = (): UseMutationResult<Category, Error, FormData
 };
 
 // Хук для обновления существующей категории
-export const useUpdateCategory = (): UseMutationResult<Category, Error, { id: number; category: FormData }> => {
+export const useUpdateCategory = (): UseMutationResult<ICategory, Error, { id: number; category: FormData }> => {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: updateCategory,

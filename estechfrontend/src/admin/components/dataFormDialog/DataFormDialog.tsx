@@ -1,5 +1,6 @@
 import React from 'react';
 import { Dialog, DialogActions, DialogContent, DialogTitle, Button, TextField, Box } from '@mui/material';
+import theme from '@styles/theme';
 
 interface DataFormDialogProps<T> {
     open: boolean;
@@ -14,7 +15,20 @@ interface DataFormDialogProps<T> {
 
 const DataFormDialog = <T,>({ open, title, data, onClose, onSave, onChange, fields, additionalContent }: DataFormDialogProps<T>) => {
     return (
-        <Dialog open={open} onClose={onClose} fullWidth maxWidth='sm'>
+        <Dialog
+            open={open}
+            onClose={onClose}
+            fullWidth
+            maxWidth='sm'
+            sx={{
+                '& .MuiPaper-root': {
+                    background: 'none',
+                    backgroundColor: theme.palette.background.paper,
+
+                    boxShadow: theme.shadows[3],
+                },
+            }}
+        >
             <DialogTitle>{title}</DialogTitle>
             <DialogContent>
                 {fields.map((field) => (
@@ -31,11 +45,11 @@ const DataFormDialog = <T,>({ open, title, data, onClose, onSave, onChange, fiel
                 ))}
                 {additionalContent && <Box mt={2}>{additionalContent}</Box>}
             </DialogContent>
-            <DialogActions>
-                <Button onClick={onClose} color='secondary'>
+            <DialogActions sx={{ m: 1 }}>
+                <Button onClick={onClose} variant={'outlined'} color='error'>
                     Отмена
                 </Button>
-                <Button onClick={onSave} color='primary'>
+                <Button onClick={onSave} variant={'contained'} color='primary'>
                     Сохранить
                 </Button>
             </DialogActions>

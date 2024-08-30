@@ -12,7 +12,7 @@ interface DataTableProps<T> {
 
 const DataTable = <T,>({ data, columns, renderActions }: DataTableProps<T>) => {
     return (
-        <TableContainer component={Paper}>
+        <TableContainer component={Paper} elevation={0}>
             <Table>
                 <TableHead>
                     <TableRow>

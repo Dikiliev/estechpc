@@ -1,13 +1,14 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Button, MenuItem, Select, InputLabel, FormControl, Box, Typography } from '@mui/material';
-import { Category, CategoryFormData } from '@admin/api/category';
+import { CategoryFormData } from '@admin/api/category';
 import DataFormDialog from '@admin/components/dataFormDialog/DataFormDialog';
+import { ICategory } from '@admin/types/category';
 
 interface CategoryFormDialogProps {
     open: boolean;
-    categoryData: Omit<Category, 'id' | 'created_at' | 'updated_at' | 'image'> & { image: File | null };
-    categories: Category[] | undefined;
-    editingCategory: Category | null;
+    categoryData: Omit<ICategory, 'id' | 'created_at' | 'updated_at' | 'image'> & { image: File | null };
+    categories: ICategory[] | undefined;
+    editingCategory: ICategory | null;
     onClose: () => void;
     onSave: () => void;
     setCategoryData: React.Dispatch<React.SetStateAction<CategoryFormData>>;
@@ -25,6 +26,11 @@ const CategoryFormDialog: React.FC<CategoryFormDialogProps> = ({
     onImageChange,
 }) => {
     const inputFileRef = useRef<HTMLInputElement>(null);
+    const [preview, setPreview] = useState<string | null>(editingCategory ? editingCategory.image : null);
+
+    useEffect(() => {
+        setPreview(editingCategory ? editingCategory.image : null);
+    }, [editingCategory]);
 
     const handleSave = () => {
         if (!categoryData.name.trim()) {
@@ -45,6 +51,15 @@ const CategoryFormDialog: React.FC<CategoryFormDialogProps> = ({
         }
     };
 
+    const handleChangeImage = (file: File | null) => {
+        if (file) {
+            const fileURL = URL.createObjectURL(file);
+            setPreview(fileURL);
+        }
+
+        onImageChange(file);
+    };
+
     return (
         <DataFormDialog<CategoryFormData>
             open={open}
@@ -56,15 +71,6 @@ const CategoryFormDialog: React.FC<CategoryFormDialogProps> = ({
             fields={[{ key: 'name', label: 'Название' }]}
             additionalContent={
                 <>
-                    <Button variant='contained' component='label' sx={{ mt: 2 }}>
-                        Загрузить изображение
-                        <input type='file' hidden accept='image/*' onChange={(e) => onImageChange(e.target.files ? e.target.files[0] : null)} />
-                    </Button>
-                    {categoryData.image && (
-                        <Box sx={{ mt: 2 }}>
-                            <Typography variant='body2'>{categoryData.image.name}</Typography>
-                        </Box>
-                    )}
                     <FormControl fullWidth margin='dense'>
                         <InputLabel id='parent-category-label'>Родительская категория</InputLabel>
                         <Select
@@ -88,6 +94,23 @@ const CategoryFormDialog: React.FC<CategoryFormDialogProps> = ({
                             ))}
                         </Select>
                     </FormControl>
+
+                    <Box sx={{ mt: 2 }}>
+                        {preview && (
+                            <Box
+                                component='img'
+                                src={preview || ''}
+                                alt='preview'
+                                sx={{ width: '100%', maxWidth: '300px', height: 'auto', borderRadius: 1 }}
+                            />
+                        )}
+                        {categoryData.image && <Typography variant='body2'>{categoryData.image.name}</Typography>}
+                    </Box>
+
+                    <Button variant='text' size={'large'} component='label'>
+                        {preview ? 'Изменить изображение' : 'Загрузить изображение'}
+                        <input type='file' hidden accept='image/*' onChange={(e) => handleChangeImage(e.target.files ? e.target.files[0] : null)} />
+                    </Button>
                 </>
             }
         />

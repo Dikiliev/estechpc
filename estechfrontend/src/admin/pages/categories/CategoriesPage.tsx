@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
-import { Button, Typography, Container } from '@mui/material';
+import { Button, Typography, Container, Paper } from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
-import { useCategories, useCreateCategory, useUpdateCategory, useDeleteCategory, Category, CategoryFormData } from '@admin/api/category';
+import { useCategories, useCreateCategory, useUpdateCategory, useDeleteCategory, CategoryFormData } from '@admin/api/category';
 
 import { filterData, sortData } from '@admin/utils/dataFilters';
 import DataFilters from '@admin/components/dataFilters/DataFilters';
@@ -9,6 +9,8 @@ import CategoryTable from '@admin/pages/categories/CategoryTable';
 import CategoryFormDialog from '@admin/pages/categories/CategoryFormDialog';
 import LoadingBox from '@components/loadingBox/LoadingBox';
 import ErrorText from '@components/errorText/ErrorText';
+import FlexBox from '@components/flexBox/FlexBox';
+import { ICategory, ISortOrder } from '@admin/types/category';
 
 const CategoriesPage: React.FC = () => {
     const { data: categories, isLoading, isError } = useCategories();
@@ -17,7 +19,7 @@ const CategoriesPage: React.FC = () => {
     const deleteCategoryMutation = useDeleteCategory();
 
     const [open, setOpen] = useState(false);
-    const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+    const [editingCategory, setEditingCategory] = useState<ICategory | null>(null);
     const [categoryData, setCategoryData] = useState<CategoryFormData>({
         name: '',
         parent: null,
@@ -25,9 +27,9 @@ const CategoriesPage: React.FC = () => {
     });
 
     const [filterBy, setFilterBy] = useState<string>('all');
-    const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+    const [sortOrder, setSortOrder] = useState<ISortOrder>('order');
 
-    const handleOpen = (category?: Category) => {
+    const handleOpen = (category?: ICategory) => {
         if (category) {
             setEditingCategory(category);
             setCategoryData({
@@ -50,7 +52,7 @@ const CategoriesPage: React.FC = () => {
         setOpen(false);
     };
 
-    const handleImageChange = (file: File | null, category?: Category) => {
+    const handleImageChange = (file: File | null, category?: ICategory) => {
         if (category) {
             const formData = new FormData();
             formData.append('name', category.name);
@@ -102,7 +104,7 @@ const CategoriesPage: React.FC = () => {
             return true;
         });
 
-        return sortData(filtered, sortOrder, (category) => category.name);
+        return sortData(filtered, sortOrder, (category: ICategory) => category.name);
     }, [categories, filterBy, sortOrder]);
 
     if (isLoading) {
@@ -118,20 +120,26 @@ const CategoriesPage: React.FC = () => {
             <Typography variant='h4' gutterBottom>
                 Управление категориями
             </Typography>
-            <Button variant='contained' color='primary' startIcon={<AddIcon />} sx={{ mb: 2 }} onClick={() => handleOpen()}>
-                Добавить категорию
-            </Button>
-            <DataFilters
-                filterBy={filterBy}
-                sortOrder={sortOrder}
-                onFilterChange={setFilterBy}
-                onSortOrderChange={setSortOrder}
-                filters={[
-                    { label: 'Все категории', value: 'all' },
-                    { label: 'Без изображения', value: 'noImage' },
-                    { label: 'Неполные данные', value: 'incomplete' },
-                ]}
-            />
+
+            <Paper elevation={0} sx={{ my: 2, p: 2 }}>
+                <FlexBox justifyContent={'space-between'} alignItems={'center'}>
+                    <DataFilters
+                        filterBy={filterBy}
+                        sortOrder={sortOrder}
+                        onFilterChange={setFilterBy}
+                        onSortOrderChange={setSortOrder}
+                        filters={[
+                            { label: 'Все категории', value: 'all' },
+                            { label: 'Без изображения', value: 'noImage' },
+                            { label: 'Неполные данные', value: 'incomplete' },
+                        ]}
+                    />
+                    <Button variant='contained' color='primary' size='large' startIcon={<AddIcon />} onClick={() => handleOpen()}>
+                        Добавить категорию
+                    </Button>
+                </FlexBox>
+            </Paper>
+
             <CategoryTable categories={filteredCategories} onEdit={handleOpen} onDelete={handleDelete} onImageChange={handleImageChange} />
 
             <CategoryFormDialog
