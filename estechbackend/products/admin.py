@@ -4,7 +4,7 @@ from .models import Category, Product, Attribute, AttributeValue, PriceHistory, 
 
 
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ['id', 'name', 'parent']
+    list_display = ['id', 'order', 'name', 'parent']
     search_fields = ['name']
     list_filter = ['parent']
 

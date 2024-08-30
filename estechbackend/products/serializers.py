@@ -20,10 +20,11 @@ class CategorySerializer(serializers.ModelSerializer):
     parent = ParentCategorySerializer(read_only=True)
     children = ParentCategorySerializer(many=True, read_only=True, source='children_set')
     image = serializers.ImageField(required=False)
+    order = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Category
-        fields = ['id', 'name', 'parent_id', 'parent', 'children', 'image']
+        fields = ['id', 'name', 'parent_id', 'parent', 'children', 'image', 'order']
 
 class ProductPhotoSerializer(serializers.ModelSerializer):
     class Meta:

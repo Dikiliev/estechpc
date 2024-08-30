@@ -10,6 +10,7 @@ class Category(models.Model):
     parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children')
 
     image = models.ImageField(upload_to='categories/', blank=True, null=True)
+    order = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         result = self.name
@@ -22,6 +23,7 @@ class Category(models.Model):
     class Meta:
         verbose_name = 'категория'
         verbose_name_plural = 'категории'
+        ordering = ['order', 'name']
 
 
 class Product(models.Model):
