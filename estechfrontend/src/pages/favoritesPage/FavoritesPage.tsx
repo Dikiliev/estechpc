@@ -3,6 +3,8 @@ import { Container, Grid, Typography, CircularProgress, Box } from '@mui/materia
 import ErrorText from '@components/errorText/ErrorText';
 import ProductList from '@components/productList/ProductList';
 import { FAVORITES_QUERY, useFavorites } from '@hooks/useFavorites';
+import BaseEmptyState from '@components/BaseEmptyState/BaseEmptyState';
+import noLikeIcon from '@assets/images/free-icon-heart-4048416.png';
 
 const FavoritesPage: React.FC = () => {
     const { favorites, isLoading, isError } = useFavorites();
@@ -15,7 +17,7 @@ const FavoritesPage: React.FC = () => {
         );
     }
 
-    if (isError || !favorites || favorites.length === 0) {
+    if (isError || !favorites) {
         return (
             <Container maxWidth='lg'>
                 <Typography variant='h4' sx={{ textAlign: 'center', mt: 4 }}>
@@ -24,6 +26,10 @@ const FavoritesPage: React.FC = () => {
                 {isError && <ErrorText>Ошибка загрузки избранных товаров.</ErrorText>}
             </Container>
         );
+    }
+
+    if (favorites.length === 0) {
+        return <BaseEmptyState title={'Нет избранных товаров'} icon={noLikeIcon} buttons={[{ name: 'Перейти в каталог', url: '/catalog' }]} />;
     }
 
     return (

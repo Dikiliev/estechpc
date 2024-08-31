@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Box, Container, Typography, List } from '@mui/material';
 import { useOrders } from 'src/hooks/useOrders';
 import OrderCard from './OrderCard';
+import BaseEmptyState from '@components/BaseEmptyState/BaseEmptyState';
+import noOrdersIcon from '@assets/images/free-icon-heart-40484161.png';
 
 const OrdersPage: React.FC = () => {
     const { orders, isLoading, isError } = useOrders();
@@ -27,6 +29,10 @@ const OrdersPage: React.FC = () => {
                 </Typography>
             </Container>
         );
+    }
+
+    if (orders.length === 0) {
+        return <BaseEmptyState title={'У вас нет заказов'} icon={noOrdersIcon} buttons={[{ name: 'Перейти в корзину', url: '/cart' }]} />;
     }
 
     return (

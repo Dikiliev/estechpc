@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Container, Box, CircularProgress, Typography, Paper } from '@mui/material';
+import { Container, Box, CircularProgress, Paper } from '@mui/material';
 import { useCart } from '@hooks/useCart';
 import ErrorText from '@components/errorText/ErrorText';
 import CartItemComponent from './CartItemComponent';
