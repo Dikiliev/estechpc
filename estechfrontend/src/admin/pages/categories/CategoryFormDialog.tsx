@@ -6,7 +6,7 @@ import { ICategory } from '@admin/types/category';
 
 interface CategoryFormDialogProps {
     open: boolean;
-    categoryData: Omit<ICategory, 'id' | 'created_at' | 'updated_at' | 'image'> & { image: File | null };
+    categoryData: CategoryFormData;
     categories: ICategory[] | undefined;
     editingCategory: ICategory | null;
     onClose: () => void;
