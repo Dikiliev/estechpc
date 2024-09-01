@@ -1,6 +1,7 @@
 from django.db.models import Avg, Count, Q
 
 from rest_framework import viewsets, status
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -63,6 +64,12 @@ class ProductViewSet(viewsets.ModelViewSet):
         include_out_of_stock = self.request.query_params.get('include_out_of_stock', 'false')
         attribute_filters = self.request.query_params.getlist('attribute')
 
+        product_ids = self.request.query_params.get('ids')
+
+        if product_ids:
+            self.pagination_class = None
+            queryset = queryset.filter(id__in=product_ids.split(','))
+
         # Фильтрация по категории
         if category_id:
             queryset = queryset.filter(category_id=category_id)
@@ -86,7 +93,7 @@ class ProductViewSet(viewsets.ModelViewSet):
 
         # Фильтрация по наличию
         if include_out_of_stock.lower() != 'true':
-            queryset = queryset.filter(count__gt=0)  # Только товары в наличии
+            queryset = queryset.filter(count__gt=0)
 
         # Агрегация
         queryset = queryset.annotate(
