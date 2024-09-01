@@ -132,6 +132,11 @@ theme.components = {
             },
         },
     },
+    MuiPaper: {
+        defaultProps: {
+            elevation: 1,
+        },
+    },
 };
 
 export default theme;

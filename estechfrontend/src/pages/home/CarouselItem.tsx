@@ -20,6 +20,7 @@ const CarouselItem: React.FC<CarouselItemProps> = ({ imageUrl, content, overlayO
                 color: 'white',
                 position: 'relative',
                 zIndex: 1,
+                borderRadius: 1,
             }}
         >
             <Box
