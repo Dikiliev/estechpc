@@ -11,7 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import CartEmptyStateComponent from '@pages/cartPage/CartEmptyStateComponent';
 
 const CartPage: React.FC = () => {
-    const { cart, isLoadingCart, isErrorCart, clearCart, isClearing, updateCartItem, removeProductFromCart } = useCart();
+    const { cart, isLoadingCart, isErrorCart, error, clearCart, isClearing, updateCartItem, removeProductFromCart } = useCart();
     const [selectedItems, setSelectedItems] = useState<number[]>([]);
     const summaryRef = useRef<HTMLDivElement>(null);
     const [isSummaryVisible, setIsSummaryVisible] = useState(false);
@@ -76,6 +76,7 @@ const CartPage: React.FC = () => {
     }
 
     if (isErrorCart || !cart) {
+        console.log(error);
         return <ErrorText>Ошибка загрузки корзины.</ErrorText>;
     }
 

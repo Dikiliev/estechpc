@@ -4,6 +4,7 @@ import apiInstance from '@api/axios';
 import { IProduct, IProductDetail, IReview } from 'types/products';
 import { createAuthAxiosInstance } from '@api/authAxios';
 import { Filter } from 'types/productFilters';
+import { AxiosResponse } from 'axios';
 
 interface ProductsResponse {
     results: IProduct[];
@@ -69,7 +70,7 @@ export const fetchAllProducts = async (page: number): Promise<ProductsResponse> 
     }
 };
 
-export const fetchProductById = async (productId: string): Promise<IProductDetail> => {
+export const fetchProductById = async (productId: string | number): Promise<IProductDetail> => {
     try {
         const response = await authAxios.get(`/products/list/${productId}/?include_detail=True`);
         return response.data;
@@ -77,6 +78,18 @@ export const fetchProductById = async (productId: string): Promise<IProductDetai
         console.error('Ошибка загрузки продукта:', error);
         throw new Error('Failed to fetch product');
     }
+};
+
+export const fetchProductsByIds = async (productIds: (string | number)[]): Promise<IProduct[]> => {
+    const idsQueryParam = productIds.join(',');
+
+    const response: AxiosResponse<IProduct[]> = await authAxios.get('/products/list/', {
+        params: {
+            ids: idsQueryParam,
+        },
+    });
+
+    return response.data;
 };
 
 export const fetchProductReviews = async (productId: string): Promise<IReview[]> => {
