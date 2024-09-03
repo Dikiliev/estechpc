@@ -1,10 +1,38 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { addToFavorites, fetchFavorites, removeFromFavorites } from '@api/favorites';
+import { fetchLocalFavorites, addLocalFavorite, removeLocalFavorite, clearLocalFavorites } from '@api/favoritesLocal';
+import { rootStore } from '@src/stores';
+import { IFavorite } from 'types/favorites';
+import { fetchProductsByIds } from '@api/products';
 
 export const FAVORITES_QUERY = ['favorites'];
 
 export const useFavorites = (invalidateQueries: unknown[][] = [['products']]) => {
+    const {
+        authStore: { isAuthenticated },
+    } = rootStore;
+
     const queryClient = useQueryClient();
+
+    // Получение данных избранного
+    const fetchFullFavorites = async (): Promise<IFavorite[]> => {
+        if (isAuthenticated) {
+            return fetchFavorites();
+        } else {
+            const localFavorites = fetchLocalFavorites();
+            const productIds = localFavorites.map((item) => item.product.id);
+            const products = await fetchProductsByIds(productIds);
+
+            return products.map((product) => {
+                const favoriteItem = localFavorites.find((item) => item.product.id === product.id);
+                return {
+                    id: product.id,
+                    product,
+                    created_at: favoriteItem ? favoriteItem.created_at : new Date().toISOString(),
+                };
+            });
+        }
+    };
 
     const {
         data: favorites,
@@ -12,40 +40,39 @@ export const useFavorites = (invalidateQueries: unknown[][] = [['products']]) =>
         isError,
     } = useQuery({
         queryKey: FAVORITES_QUERY,
-        queryFn: fetchFavorites,
+        queryFn: fetchFullFavorites,
     });
 
-    const addToFavoritesMutation = useMutation({
-        mutationFn: addToFavorites,
-        onSuccess: () => {
-            if (invalidateQueries) {
-                invalidateQueries.forEach((q) => {
-                    queryClient.invalidateQueries({
-                        queryKey: q,
-                    });
-
-                    queryClient.invalidateQueries({
-                        queryKey: FAVORITES_QUERY,
-                    });
-                });
+    // Мутации для управления избранными товарами
+    const addToFavoritesMutation = useMutation<void, Error, number>({
+        mutationFn: async (productId) => {
+            if (isAuthenticated) {
+                await addToFavorites(productId);
+            } else {
+                addLocalFavorite(productId);
             }
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: FAVORITES_QUERY });
+            invalidateQueries.forEach((q) => {
+                queryClient.invalidateQueries({ queryKey: q });
+            });
         },
     });
 
-    const removeFromFavoritesMutation = useMutation({
-        mutationFn: removeFromFavorites,
-        onSuccess: () => {
-            if (invalidateQueries) {
-                invalidateQueries.forEach((q) => {
-                    queryClient.invalidateQueries({
-                        queryKey: q,
-                    });
-
-                    queryClient.invalidateQueries({
-                        queryKey: FAVORITES_QUERY,
-                    });
-                });
+    const removeFromFavoritesMutation = useMutation<void, Error, number>({
+        mutationFn: async (productId) => {
+            if (isAuthenticated) {
+                await removeFromFavorites(productId);
+            } else {
+                removeLocalFavorite(productId);
             }
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: FAVORITES_QUERY });
+            invalidateQueries.forEach((q) => {
+                queryClient.invalidateQueries({ queryKey: q });
+            });
         },
     });
 
@@ -57,15 +84,30 @@ export const useFavorites = (invalidateQueries: unknown[][] = [['products']]) =>
         }
     };
 
-    const isAdding = addToFavoritesMutation.status === 'pending';
-    const isRemoving = removeFromFavoritesMutation.status === 'pending';
+    // Синхронизация локальных избранных товаров с сервером
+    const syncLocalFavoritesToServer = useMutation<void, Error, void>({
+        mutationFn: async () => {
+            const localFavorites = fetchLocalFavorites();
+
+            for (const item of localFavorites) {
+                await addToFavorites(item.product.id);
+            }
+
+            clearLocalFavorites();
+            queryClient.invalidateQueries({ queryKey: ['favorites'] }); // Обновляем избранное на клиенте
+        },
+        onError: (error) => {
+            console.error('Ошибка синхронизации локальных избранных товаров:', error);
+        },
+    });
 
     return {
         favorites,
         isLoading,
         isError,
         toggleFavorite,
-        isAdding,
-        isRemoving,
+        isAdding: addToFavoritesMutation.isPending,
+        isRemoving: removeFromFavoritesMutation.isPending,
+        syncLocalFavoritesToServer: syncLocalFavoritesToServer.mutate,
     };
 };

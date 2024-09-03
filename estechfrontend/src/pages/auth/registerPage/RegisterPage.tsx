@@ -5,6 +5,7 @@ import React, { useState } from 'react';
 import { observer } from 'mobx-react';
 import { useStore } from '@stores/StoreContext';
 import { useCart } from '@hooks/useCart';
+import { useFavorites } from '@hooks/useFavorites';
 
 const RegisterPage = observer(() => {
     const { authStore } = useStore();
@@ -17,6 +18,7 @@ const RegisterPage = observer(() => {
     const navigate = useNavigate();
 
     const { syncLocalCartToServer } = useCart();
+    const { syncLocalFavoritesToServer } = useFavorites();
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -33,6 +35,7 @@ const RegisterPage = observer(() => {
 
         if (!authStore.hasErrors()) {
             syncLocalCartToServer();
+            syncLocalFavoritesToServer();
             navigate('/');
         }
 
