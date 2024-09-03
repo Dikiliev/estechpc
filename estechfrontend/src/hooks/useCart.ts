@@ -2,13 +2,15 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { fetchCart, addProductToCart, updateCartItem, removeProductFromCart, clearCart } from '@api/cart';
 import { fetchLocalCart, addProductToLocalCart, updateLocalCartItem, removeProductFromLocalCart, clearLocalCart } from '@api/cartLocal';
 import { ICart, ICartItem } from 'types/cart';
-import { useAuthStore } from '@stores/auth';
 import { fetchProductsByIds } from '@api/products';
+import { rootStore } from '@src/stores';
 
 export const useCart = () => {
+    const {
+        authStore: { isAuthenticated },
+    } = rootStore;
+
     const queryClient = useQueryClient();
-    const [isLoggedIn] = useAuthStore((state) => [state.isLoggedIn, state.user]);
-    const isAuthenticated = isLoggedIn();
 
     // Получение данных корзины
     const fetchFullCart = async (): Promise<ICart> => {
@@ -102,6 +104,24 @@ export const useCart = () => {
         },
     });
 
+    const syncLocalCartToServer = useMutation<void, Error, void>({
+        mutationFn: async () => {
+            if (isAuthenticated) {
+                const localCart = fetchLocalCart();
+
+                for (const item of localCart.items) {
+                    await addProductToCart(item.product.id, item.quantity);
+                }
+
+                clearLocalCart(); // Очищаем локальную корзину после успешной синхронизации
+                queryClient.invalidateQueries({ queryKey: ['cart'] }); // Обновляем корзину на клиенте
+            }
+        },
+        onError: (error) => {
+            console.error('Ошибка синхронизации локальной корзины:', error);
+        },
+    });
+
     return {
         cart,
         isLoadingCart,
@@ -115,5 +135,7 @@ export const useCart = () => {
         isUpdating: updateCartItemMutation.isPending,
         isRemoving: removeProductFromCartMutation.isPending,
         isClearing: clearCartMutation.isPending,
+
+        syncLocalCartToServer: syncLocalCartToServer.mutate,
     };
 };

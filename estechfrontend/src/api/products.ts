@@ -2,7 +2,6 @@
 
 import apiInstance from '@api/axios';
 import { IProduct, IProductDetail, IReview } from 'types/products';
-import { createAuthAxiosInstance } from '@api/authAxios';
 import { Filter } from 'types/productFilters';
 import { AxiosResponse } from 'axios';
 
@@ -14,8 +13,6 @@ interface ProductsResponse {
 export interface FiltersResponse {
     filters: Filter[];
 }
-
-const authAxios = createAuthAxiosInstance();
 
 export const fetchProducts = async (
     categoryId: number | null,
@@ -46,7 +43,7 @@ export const fetchProducts = async (
         params.append('include_out_of_stock', 'false');
         params.append('page', page.toString());
 
-        const response = await authAxios.get(`/products/list/?${params.toString()}`);
+        const response = await apiInstance.get(`/products/list/?${params.toString()}`);
         if (response.data && Array.isArray(response.data.results)) {
             return response.data;
         }
@@ -59,7 +56,7 @@ export const fetchProducts = async (
 
 export const fetchAllProducts = async (page: number): Promise<ProductsResponse> => {
     try {
-        const response = await authAxios.get(`/products/list/?page=${page}`);
+        const response = await apiInstance.get(`/products/list/?page=${page}`);
         if (response.data && Array.isArray(response.data.results)) {
             return response.data;
         }
@@ -72,7 +69,7 @@ export const fetchAllProducts = async (page: number): Promise<ProductsResponse> 
 
 export const fetchProductById = async (productId: string | number): Promise<IProductDetail> => {
     try {
-        const response = await authAxios.get(`/products/list/${productId}/?include_detail=True`);
+        const response = await apiInstance.get(`/products/list/${productId}/?include_detail=True`);
         return response.data;
     } catch (error) {
         console.error('Ошибка загрузки продукта:', error);
@@ -83,7 +80,7 @@ export const fetchProductById = async (productId: string | number): Promise<IPro
 export const fetchProductsByIds = async (productIds: (string | number)[]): Promise<IProduct[]> => {
     const idsQueryParam = productIds.join(',');
 
-    const response: AxiosResponse<IProduct[]> = await authAxios.get('/products/list/', {
+    const response: AxiosResponse<IProduct[]> = await apiInstance.get('/products/list/', {
         params: {
             ids: idsQueryParam,
         },
@@ -93,7 +90,7 @@ export const fetchProductsByIds = async (productIds: (string | number)[]): Promi
 };
 
 export const fetchProductReviews = async (productId: string): Promise<IReview[]> => {
-    const response = await authAxios.get(`/community/products/${productId}/reviews/`);
+    const response = await apiInstance.get(`/community/products/${productId}/reviews/`);
     return response.data;
 };
 

@@ -1,32 +1,29 @@
 import { TextField, Button, Box, Typography, CircularProgress, Alert } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { login } from '@api/auth.js';
 import React, { useState } from 'react';
+import { observer } from 'mobx-react';
+import { useStore } from '@stores/StoreContext';
 
-const LoginPage = () => {
+const LoginPage = observer(() => {
+    const { authStore } = useStore();
+
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         setLoading(true);
-        setError(null);
+        authStore.clearErrors();
 
-        try {
-            const { error } = await login(username, password);
-            if (error) {
-                setError(error.toString());
-            } else {
-                navigate('/');
-            }
-        } catch (err) {
-            setError('Произошла ошибка при входе.');
-        } finally {
-            setLoading(false);
+        await authStore.login({ username, password });
+
+        if (!authStore.hasErrors()) {
+            navigate('/');
         }
+
+        setLoading(false);
     };
 
     const handleNavigateToRegister = () => {
@@ -38,9 +35,9 @@ const LoginPage = () => {
             <Typography variant='h5' component='h1' gutterBottom>
                 Вход
             </Typography>
-            {error && (
+            {authStore.hasErrors() && (
                 <Alert severity='error' sx={{ mb: 2 }}>
-                    {error}
+                    {authStore.getErrorMessages()}
                 </Alert>
             )}
             <TextField label='Имя пользователя' value={username} onChange={(e) => setUsername(e.target.value)} fullWidth margin='normal' required />
@@ -66,6 +63,6 @@ const LoginPage = () => {
             </Typography>
         </Box>
     );
-};
+});
 
 export default LoginPage;

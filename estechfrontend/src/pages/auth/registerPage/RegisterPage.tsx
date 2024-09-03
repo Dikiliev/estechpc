@@ -1,53 +1,35 @@
 import { TextField, Button, Box, Typography, CircularProgress, Alert } from '@mui/material';
-import { useNavigate } from 'react-router-dom'; // Импортируем Link
+import { useNavigate } from 'react-router-dom';
 import React, { useState } from 'react';
 
-import { register } from '@api/auth';
+import { observer } from 'mobx-react';
+import { useStore } from '@stores/StoreContext';
 
-const RegisterPage = () => {
+const RegisterPage = observer(() => {
+    const { authStore } = useStore();
+
     const [username, setUsername] = useState('');
-    const [firstName, setFirstName] = useState('');
-    const [lastName, setLastName] = useState('');
     const [password, setPassword] = useState('');
     const [password2, setPassword2] = useState('');
     const [email, setEmail] = useState('');
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         setLoading(true);
-        setError(null);
+        authStore.clearErrors();
 
         if (password !== password2) {
-            setError('Пароли не совпадают.');
+            authStore.addErrors({ password: ['Пароли не совпадают.'] }, true);
             setLoading(false);
             return;
         }
 
-        try {
-            const { error } = await register(username, email, password, password2, firstName, lastName);
+        await authStore.register({ username, email, password, password2 });
 
-            if (error) {
-                let errors = '';
-
-                for (const key in error) {
-                    for (const item of error[key]) {
-                        errors += item + '\n';
-                    }
-                }
-
-                setError(errors || 'Произошла ошибка при регистрации.');
-            } else {
-                navigate('/');
-            }
-        } catch (err) {
-            if (err instanceof Error) {
-                setError(err.message || 'Произошла ошибка при регистрации.');
-            } else {
-                setError('Произошла ошибка при регистрации.');
-            }
+        if (!authStore.hasErrors()) {
+            navigate('/');
         }
 
         setLoading(false);
@@ -58,13 +40,11 @@ const RegisterPage = () => {
             <Typography variant='h5' component='h1' gutterBottom>
                 Регистрация
             </Typography>
-            {error && (
+            {authStore.hasErrors() && (
                 <Alert severity='error' sx={{ mb: 2 }}>
-                    {error}
+                    {authStore.getErrorMessages()}
                 </Alert>
             )}
-            <TextField label='Имя' value={firstName} onChange={(e) => setFirstName(e.target.value)} fullWidth margin='normal' required />
-            <TextField label='Фамилия' value={lastName} onChange={(e) => setLastName(e.target.value)} fullWidth margin='normal' required />
             <TextField label='Имя пользователя' value={username} onChange={(e) => setUsername(e.target.value)} fullWidth margin='normal' required />
             <TextField label='Email' type='email' value={email} onChange={(e) => setEmail(e.target.value)} fullWidth margin='normal' required />
             <TextField
@@ -93,6 +73,6 @@ const RegisterPage = () => {
             </Typography>
         </Box>
     );
-};
+});
 
 export default RegisterPage;

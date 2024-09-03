@@ -28,6 +28,7 @@ import OrderSuccessPage from '@pages/orderSuccessPage/OrderSuccessPage';
 // Страницы админской панели
 import AdminSidebar from '@admin/components/sidebar/AdminSidebar';
 import CategoriesPage from '@admin/pages/categories/CategoriesPage';
+import { observer } from 'mobx-react';
 
 const BaseLayout: React.FC = () => {
     const location = useLocation();
@@ -78,4 +79,4 @@ const App: React.FC = () => {
     );
 };
 
-export default App;
+export default observer(App);

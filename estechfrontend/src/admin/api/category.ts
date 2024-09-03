@@ -1,8 +1,6 @@
 import { useQuery, useMutation, useQueryClient, UseMutationResult, UseQueryResult } from '@tanstack/react-query';
-import { createAuthAxiosInstance } from '@api/authAxios';
 import { ICategory } from '@admin/types/category';
-
-const authAxios = createAuthAxiosInstance();
+import { apiInstance } from '@src/api';
 
 export interface CategoryFormData {
     name: string;
@@ -12,13 +10,13 @@ export interface CategoryFormData {
 
 // Получение списка категорий
 const getCategories = async (): Promise<ICategory[]> => {
-    const response = await authAxios.get<ICategory[]>('products/categories/');
+    const response = await apiInstance.get<ICategory[]>('products/categories/');
     return response.data;
 };
 
 // Создание новой категории
 const createCategory = async (category: FormData): Promise<ICategory> => {
-    const response = await authAxios.post<ICategory>('products/categories/', category, {
+    const response = await apiInstance.post<ICategory>('products/categories/', category, {
         headers: {
             'Content-Type': 'multipart/form-data',
         },
@@ -28,7 +26,7 @@ const createCategory = async (category: FormData): Promise<ICategory> => {
 
 // Обновление существующей категории
 const updateCategory = async ({ id, category }: { id: number; category: FormData }): Promise<ICategory> => {
-    const response = await authAxios.put<ICategory>(`products/categories/${id}/`, category, {
+    const response = await apiInstance.put<ICategory>(`products/categories/${id}/`, category, {
         headers: {
             'Content-Type': 'multipart/form-data',
         },
@@ -38,7 +36,7 @@ const updateCategory = async ({ id, category }: { id: number; category: FormData
 
 // Удаление категории
 const deleteCategory = async (id: number): Promise<void> => {
-    await authAxios.delete(`products/categories/${id}/`);
+    await apiInstance.delete(`products/categories/${id}/`);
 };
 
 // Хук для получения категорий

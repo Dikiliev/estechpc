@@ -4,7 +4,7 @@ from django.shortcuts import render
 from rest_framework import status
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
-from .serializers import MyTokenObtainPairSerializer, RegisterSerializer, UserProfileSerializer
+from .serializers import MyTokenObtainPairSerializer, RegisterSerializer, UserProfileSerializer, UserSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework import generics
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -22,6 +22,15 @@ class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     permission_classes = (AllowAny,)
     serializer_class = RegisterSerializer
+
+
+class UserViewSet(viewsets.ModelViewSet):
+    serializer_class = UserSerializer
+    pagination_class = None
+
+    def get_queryset(self):
+        queryset = User.objects.all()
+        return queryset
 
 
 class UserProfileView(generics.RetrieveUpdateAPIView):

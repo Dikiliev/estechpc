@@ -1,5 +1,5 @@
 // src/components/header/Header.tsx
-import React, { useEffect } from 'react';
+import React from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -19,16 +19,16 @@ import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
 import IconButton from '@mui/material/IconButton';
 import theme from '@styles/theme';
 import { useNavigate } from 'react-router-dom';
-import { useAuthStore } from '@stores/auth';
-import useCartStore from '@stores/cartStore';
-import { useCart } from '@hooks/useCart';
-import { useFavorites } from '@hooks/useFavorites';
-import useFavoritesStore from '@stores/favoritesStore';
+import { observer } from 'mobx-react';
+import { useStore } from '@stores/StoreContext';
 
-const Header: React.FC = () => {
+// import { useCart } from '@hooks/useCart';
+// import { useFavorites } from '@hooks/useFavorites';
+
+const Header: React.FC = observer(() => {
     const navigate = useNavigate();
 
-    const [isLoggedIn] = useAuthStore((state) => [state.isLoggedIn, state.user]);
+    const { authStore } = useStore();
 
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -53,25 +53,25 @@ const Header: React.FC = () => {
         setMobileMoreAnchorEl(null);
     };
 
-    const { cart } = useCart(); // Предполагается, что этот хук возвращает текущее состояние корзины
-    const { cartCount, setCartCount } = useCartStore();
+    // const { cart } = useCart(); // Предполагается, что этот хук возвращает текущее состояние корзины
+    // const { cartCount, setCartCount } = useCartStore();
 
-    const { favorites } = useFavorites();
-    const { favoritesCount, setFavoritesCount } = useFavoritesStore();
+    // const { favorites } = useFavorites();
+    // const { favoritesCount, setFavoritesCount } = useFavoritesStore();
 
-    useEffect(() => {
-        if (cart) {
-            const totalCount = cart.items.reduce((acc, item) => acc + item.quantity, 0);
-            setCartCount(totalCount);
-        }
-    }, [cart, setCartCount]);
-
-    useEffect(() => {
-        if (favorites) {
-            const totalCount = favorites.length;
-            setFavoritesCount(totalCount);
-        }
-    }, [favorites, setFavoritesCount]);
+    // useEffect(() => {
+    //     if (cart) {
+    //         const totalCount = cart.items.reduce((acc, item) => acc + item.quantity, 0);
+    //         setCartCount(totalCount);
+    //     }
+    // }, [cart, setCartCount]);
+    //
+    // useEffect(() => {
+    //     if (favorites) {
+    //         const totalCount = favorites.length;
+    //         setFavoritesCount(totalCount);
+    //     }
+    // }, [favorites, setFavoritesCount]);
 
     return (
         <Box sx={{ flexGrow: 1 }}>
@@ -98,18 +98,20 @@ const Header: React.FC = () => {
                                 onClick={() => navigate('/favorites')}
                                 icon={<FavoriteIcon />}
                                 label='Избранное'
-                                badgeContent={favoritesCount}
+                                // badgeContent={favoritesCount}
+                                badgeContent={1}
                                 ariaLabel='show favorites'
                             />
                             <IconWithLabel
                                 onClick={() => navigate('/cart')}
                                 icon={<ShoppingCartIcon />}
                                 label='Корзина'
-                                badgeContent={cartCount}
+                                // badgeContent={cartCount}
+                                badgeContent={1}
                                 ariaLabel='show shopping cart'
                             />
 
-                            {isLoggedIn() ? (
+                            {authStore.isAuthenticated ? (
                                 <>
                                     <IconWithLabel
                                         icon={<AccountCircle />}
@@ -144,6 +146,6 @@ const Header: React.FC = () => {
             />
         </Box>
     );
-};
+});
 
 export default Header;

@@ -19,13 +19,13 @@
     "framer-motion": "^11.3.30",
     "js-cookie": "^3.0.5",
     "jwt-decode": "^4.0.0",
+    "mobx": "^6.13.1",
+    "mobx-react": "^9.1.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-intersection-observer": "^9.13.0",
     "react-material-ui-carousel": "^3.4.2",
-    "react-router-dom": "^6.26.0",
-    "simple-zustand-devtools": "^1.1.0",
-    "zustand": "^4.5.4"
+    "react-router-dom": "^6.26.0"
   },
   "devDependencies": {
     "@types/js-cookie": "^3.0.6",

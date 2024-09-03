@@ -4,11 +4,12 @@ import App from './App';
 
 import { queryClient } from '@src/queryClient';
 import { QueryClientProvider } from '@tanstack/react-query';
+import { StoreProvider } from '@stores/StoreContext';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-    <React.StrictMode>
+    <StoreProvider>
         <QueryClientProvider client={queryClient}>
             <App />
         </QueryClientProvider>
-    </React.StrictMode>
+    </StoreProvider>
 );
