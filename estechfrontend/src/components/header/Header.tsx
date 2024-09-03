@@ -1,5 +1,5 @@
 // src/components/header/Header.tsx
-import React from 'react';
+import React, { useEffect } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -22,13 +22,13 @@ import { useNavigate } from 'react-router-dom';
 import { observer } from 'mobx-react';
 import { useStore } from '@stores/StoreContext';
 
-// import { useCart } from '@hooks/useCart';
-// import { useFavorites } from '@hooks/useFavorites';
+import { useCart } from '@hooks/useCart';
+import { useFavorites } from '@hooks/useFavorites';
 
 const Header: React.FC = observer(() => {
     const navigate = useNavigate();
 
-    const { authStore } = useStore();
+    const { authStore, cartStore, favoritesStore } = useStore();
 
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -53,25 +53,22 @@ const Header: React.FC = observer(() => {
         setMobileMoreAnchorEl(null);
     };
 
-    // const { cart } = useCart(); // Предполагается, что этот хук возвращает текущее состояние корзины
-    // const { cartCount, setCartCount } = useCartStore();
+    const { cart } = useCart();
+    const { favorites } = useFavorites();
 
-    // const { favorites } = useFavorites();
-    // const { favoritesCount, setFavoritesCount } = useFavoritesStore();
+    useEffect(() => {
+        if (cart) {
+            const totalCount = cart.items.reduce((acc, item) => acc + item.quantity, 0);
+            cartStore.setCartItemCount(totalCount);
+        }
+    }, [cart]);
 
-    // useEffect(() => {
-    //     if (cart) {
-    //         const totalCount = cart.items.reduce((acc, item) => acc + item.quantity, 0);
-    //         setCartCount(totalCount);
-    //     }
-    // }, [cart, setCartCount]);
-    //
-    // useEffect(() => {
-    //     if (favorites) {
-    //         const totalCount = favorites.length;
-    //         setFavoritesCount(totalCount);
-    //     }
-    // }, [favorites, setFavoritesCount]);
+    useEffect(() => {
+        if (favorites) {
+            const totalCount = favorites.length;
+            favoritesStore.setFavoritesCount(totalCount);
+        }
+    }, [favorites]);
 
     return (
         <Box sx={{ flexGrow: 1 }}>
@@ -98,16 +95,14 @@ const Header: React.FC = observer(() => {
                                 onClick={() => navigate('/favorites')}
                                 icon={<FavoriteIcon />}
                                 label='Избранное'
-                                // badgeContent={favoritesCount}
-                                badgeContent={1}
+                                badgeContent={favoritesStore.favoritesItemCount}
                                 ariaLabel='show favorites'
                             />
                             <IconWithLabel
                                 onClick={() => navigate('/cart')}
                                 icon={<ShoppingCartIcon />}
                                 label='Корзина'
-                                // badgeContent={cartCount}
-                                badgeContent={1}
+                                badgeContent={cartStore.cartItemCount}
                                 ariaLabel='show shopping cart'
                             />
 

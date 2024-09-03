@@ -1,11 +1,13 @@
 // src/stores/rootStore.ts
 import authStore from './authStore';
+import cartStore from './cartStore';
+import favoritesStore from './favoritesStore';
 
 class RootStore {
     authStore = authStore;
 
-    // Здесь можно добавить другие stores
-    // например, productStore = new ProductStore(this);
+    cartStore = cartStore;
+    favoritesStore = favoritesStore;
 }
 
 const rootStore = new RootStore();
