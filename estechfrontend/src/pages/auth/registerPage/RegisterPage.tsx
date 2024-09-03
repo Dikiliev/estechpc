@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 
 import { observer } from 'mobx-react';
 import { useStore } from '@stores/StoreContext';
+import { useCart } from '@hooks/useCart';
 
 const RegisterPage = observer(() => {
     const { authStore } = useStore();
@@ -14,6 +15,8 @@ const RegisterPage = observer(() => {
     const [email, setEmail] = useState('');
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+
+    const { syncLocalCartToServer } = useCart();
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -29,6 +32,7 @@ const RegisterPage = observer(() => {
         await authStore.register({ username, email, password, password2 });
 
         if (!authStore.hasErrors()) {
+            syncLocalCartToServer();
             navigate('/');
         }
 

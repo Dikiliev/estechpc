@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import React, { useState } from 'react';
 import { observer } from 'mobx-react';
 import { useStore } from '@stores/StoreContext';
+import { useCart } from '@hooks/useCart';
 
 const LoginPage = observer(() => {
     const { authStore } = useStore();
@@ -12,6 +13,8 @@ const LoginPage = observer(() => {
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
+    const { syncLocalCartToServer } = useCart();
+
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         setLoading(true);
@@ -20,6 +23,7 @@ const LoginPage = observer(() => {
         await authStore.login({ username, password });
 
         if (!authStore.hasErrors()) {
+            syncLocalCartToServer();
             navigate('/');
         }
 
