@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from community.serializers import ProductReviewSerializer
+from orders.models import Like
 from .models import Product, ProductPhoto, Category, Attribute, AttributeValue, Filter, ProductAttribute
 
 
@@ -52,21 +53,11 @@ class ProductSerializer(serializers.ModelSerializer):
 
     average_rating = serializers.FloatField(read_only=True)
     count_of_reviews = serializers.IntegerField(read_only=True)
-    is_favorite = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
         fields = ['id', 'name', 'category', 'short_characteristics', 'description', 'price', 'photos',
-                  'average_rating', 'count', 'count_of_reviews', 'count_of_orders', 'is_favorite']
-
-    def get_is_favorite(self, obj):
-        request = self.context.get('request', None)
-        if request and hasattr(request, "user"):
-            if request.user.is_anonymous:
-                return False
-
-            return Favorite.objects.filter(user=request.user, product=obj).exists()
-        return False
+                  'average_rating', 'count', 'count_of_reviews', 'count_of_orders']
 
 
 class ProductDetailSerializer(ProductSerializer):

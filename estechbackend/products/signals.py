@@ -23,10 +23,3 @@ def handle_price_history(sender, instance, created, **kwargs):
           and instance._pre_save_price is not None and instance._pre_save_price != instance.price):
         instance.add_price_history(instance.price)
 
-
-@receiver(post_save, sender=Like)
-@receiver(post_delete, sender=Like)
-def update_favorites_count(sender, instance, **kwargs):
-    product = instance.product
-    product.count_of_likes = product.favorites.count()
-    product.save()

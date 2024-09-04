@@ -8,7 +8,7 @@ from django.db import transaction
 from rest_framework.viewsets import ViewSet
 
 from .models import Cart, CartItem, Product, Order, Like, LikesList
-from .serializers import CartSerializer, CartItemSerializer, OrderSerializer, LikeSerializer
+from .serializers import CartSerializer, CartItemSerializer, OrderSerializer, LikeSerializer, LikesListSerializer
 
 
 class CartDetailView(generics.RetrieveAPIView):
@@ -92,6 +92,60 @@ class ClearCartView(APIView):
         cart.items.all().delete()
         return Response({'success': True, 'message': 'Cart cleared'}, status=status.HTTP_200_OK)
 
+
+class FavoritesDetailView(generics.RetrieveAPIView):
+    serializer_class = LikesListSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        user = self.request.user
+        likes_list, created = LikesList.objects.get_or_create(user=user)
+        return likes_list
+
+
+class AddProductToFavoritesView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    @transaction.atomic
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        likes_list, created = LikesList.objects.get_or_create(user=user)
+        product_id = request.data.get('product_id')
+
+        product = get_object_or_404(Product, id=product_id)
+        favorite, created = Like.objects.get_or_create(list=likes_list, product=product)
+
+        if not created:
+            return Response({'success': False, 'message': 'Product already in favorites'}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({'success': True, 'message': 'Product added to favorites'}, status=status.HTTP_200_OK)
+
+
+class RemoveProductFromFavoritesView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, *args, **kwargs):
+        user = request.user
+        likes_list = get_object_or_404(LikesList, user=user)
+        product_id = kwargs.get('product_id')
+
+        favorite = get_object_or_404(Like, list=likes_list, product_id=product_id)
+        favorite.delete()
+
+        return Response({'success': True, 'message': 'Product removed from favorites'}, status=status.HTTP_200_OK)
+
+
+class ClearFavoritesView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        likes_list = get_object_or_404(LikesList, user=user)
+        likes_list.items.all().delete()
+
+        return Response({'success': True, 'message': 'Favorites cleared'}, status=status.HTTP_200_OK)
+
+
 class OrderListCreateView(generics.ListCreateAPIView):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
@@ -118,38 +172,3 @@ class OrderDetailView(generics.RetrieveAPIView):
             raise PermissionDenied("Вы не можете просматривать этот заказ.")
         return order
 
-
-class FavoriteViewSet(ViewSet):
-    permission_classes = [IsAuthenticated]
-
-    def list(self, request):
-        favorites = Like.objects.filter(user=request.user)
-        serializer = LikeSerializer(favorites, many=True, context={'request': request})
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-    @transaction.atomic
-    def create(self, request):
-        user = request.user
-        likes_list, created = LikesList.objects.get_or_create(user=user)
-
-        product_id = request.data.get('product_id')
-        if not product_id:
-            return Response({'detail': 'Product ID is required'}, status=status.HTTP_400_BAD_REQUEST)
-
-        product = get_object_or_404(Product, id=product_id)
-
-        favorite, created = Like.objects.get_or_create(list=likes_list, product=product)
-        if not created:
-            return Response({'detail': 'Product already in favorites'}, status=status.HTTP_400_BAD_REQUEST)
-
-        serializer = LikeSerializer(favorite)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-    @transaction.atomic
-    def destroy(self, request, pk=None):
-        if pk is None:
-            return Response({'detail': 'Product ID is required'}, status=status.HTTP_400_BAD_REQUEST)
-
-        favorite = get_object_or_404(Like, user=request.user, product_id=pk)
-        favorite.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
