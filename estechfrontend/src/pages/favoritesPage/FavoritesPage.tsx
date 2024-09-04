@@ -28,7 +28,7 @@ const FavoritesPage: React.FC = () => {
         );
     }
 
-    if (favoritesList.length === 0) {
+    if (favoritesList.items.length === 0) {
         return <BaseEmptyState title={'Нет избранных товаров'} icon={noLikeIcon} buttons={[{ name: 'Перейти в каталог', url: '/catalog' }]} />;
     }
 
@@ -39,7 +39,7 @@ const FavoritesPage: React.FC = () => {
             </Typography>
 
             <Grid item xs={12} sm={9} sx={{ paddingTop: '0 !important', marginTop: 0 }}>
-                <ProductList products={favoritesList.map((favorite) => favorite.product)} queryKeys={[FAVORITES_QUERY]} />
+                <ProductList products={favoritesList.items.map((favorite) => favorite.product)} queryKeys={[FAVORITES_QUERY]} />
             </Grid>
         </Container>
     );

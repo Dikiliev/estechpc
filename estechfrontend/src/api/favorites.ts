@@ -4,7 +4,6 @@ import { AxiosResponse } from 'axios';
 
 export const fetchFavorites = async (): Promise<IFavoritesList> => {
     const response: AxiosResponse<IFavoritesList> = await apiInstance.get('/orders/favorites/');
-    console.log(response.data);
     return response.data;
 };
 
