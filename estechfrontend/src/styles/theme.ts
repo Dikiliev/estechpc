@@ -134,7 +134,7 @@ theme.components = {
     },
     MuiPaper: {
         defaultProps: {
-            elevation: 1,
+            elevation: 0,
         },
     },
 };

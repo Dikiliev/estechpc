@@ -54,7 +54,7 @@ const Header: React.FC = observer(() => {
     };
 
     const { cart } = useCart();
-    const { favorites } = useFavorites();
+    const { favoritesList } = useFavorites();
 
     useEffect(() => {
         if (cart) {
@@ -64,11 +64,11 @@ const Header: React.FC = observer(() => {
     }, [cart]);
 
     useEffect(() => {
-        if (favorites) {
-            const totalCount = favorites.length;
+        if (favoritesList) {
+            const totalCount = favoritesList.items.length;
             favoritesStore.setFavoritesCount(totalCount);
         }
-    }, [favorites]);
+    }, [favoritesList]);
 
     return (
         <Box sx={{ flexGrow: 1 }}>

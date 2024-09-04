@@ -19,13 +19,14 @@ interface ProductDetailsProps {
 const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
     const navigate = useNavigate();
 
-    const { toggleFavorite, isAdding: isFavoriteAdding, isRemoving: isFavoriteRemoving } = useFavorites([['product', product.id]]);
+    const { favoritesList, toggleFavorite, isAdding: isFavoriteAdding, isRemoving: isFavoriteRemoving } = useFavorites([['product', product.id]]);
     const { cart, addProductToCart, isAdding: isCartAdding, isRemoving: isCartRemoving } = useCart();
 
     const isFavoriteLoading = isFavoriteAdding || isFavoriteRemoving;
     const isCartLoading = isCartAdding || isCartRemoving;
 
     const isInCart = cart?.items.some((item) => item.product.id === product.id);
+    const isInFavoritesList = favoritesList?.items.some((item) => item.product.id === product.id);
 
     const handleClickCart = () => {
         if (isInCart) {
@@ -64,7 +65,7 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product }) => {
 
                 <FavoriteButton
                     productId={product.id}
-                    isFavorite={product.is_favorite}
+                    isFavorite={!!isInFavoritesList}
                     toggleFavorite={toggleFavorite}
                     isLoading={isFavoriteLoading}
                 />

@@ -19,9 +19,10 @@ export interface ProductListProps {
 
 const ProductList: React.FC<ProductListProps> = ({ products, queryKeys }) => {
     const navigate = useNavigate();
-    const { toggleFavorite, isAdding: isFavoriteAdding, isRemoving: isFavoriteRemoving } = useFavorites(queryKeys);
 
     const { cart, addProductToCart, isAdding: isCartAdding, isRemoving: isCartRemoving } = useCart();
+    const { favoritesList, toggleFavorite, isAdding: isFavoriteAdding, isRemoving: isFavoriteRemoving } = useFavorites(queryKeys);
+
     const [cartClickedItems, setCartClickedItems] = useState<number[]>([]);
     const [favoriteClickedItems, setFavoriteClickedItems] = useState<number[]>([]);
 
@@ -60,6 +61,7 @@ const ProductList: React.FC<ProductListProps> = ({ products, queryKeys }) => {
         <Grid container spacing={2}>
             {products.map((product) => {
                 const isInCart = cart?.items.some((item) => item.product.id === product.id);
+                const isInFavorite = favoritesList?.items.some((item) => item.product.id === product.id);
 
                 return (
                     <Grid item xs={12} sm={6} md={4} xl={3} key={product.id}>
@@ -71,7 +73,6 @@ const ProductList: React.FC<ProductListProps> = ({ products, queryKeys }) => {
                                 justifyContent: 'space-between',
                                 height: '100%',
                                 borderRadius: 1,
-                                boxShadow: 1,
                                 overflow: 'hidden',
                                 transition: 'transform 0.3s, box-shadow 0.3s',
                                 '&:hover': {
@@ -115,7 +116,7 @@ const ProductList: React.FC<ProductListProps> = ({ products, queryKeys }) => {
 
                                         <FavoriteButton
                                             productId={product.id}
-                                            isFavorite={product.is_favorite}
+                                            isFavorite={!!isInFavorite}
                                             toggleFavorite={changeFavorite}
                                             isLoading={favoriteClickedItems.includes(product.id) && isFavoriteLoading}
                                             sx={{ backgroundColor: theme.palette.background.default, borderRadius: 1 }}

@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { addToFavorites, fetchFavorites, removeFromFavorites } from '@api/favorites';
 import { fetchLocalFavorites, addLocalFavorite, removeLocalFavorite, clearLocalFavorites } from '@api/favoritesLocal';
 import { rootStore } from '@src/stores';
-import { IFavorite } from 'types/favorites';
+import { IFavoritesList } from 'types/favorites';
 import { fetchProductsByIds } from '@api/products';
 
 export const FAVORITES_QUERY = ['favorites'];
@@ -15,7 +15,7 @@ export const useFavorites = (invalidateQueries: unknown[][] = [['products']]) =>
     const queryClient = useQueryClient();
 
     // Получение данных избранного
-    const fetchFullFavorites = async (): Promise<IFavorite[]> => {
+    const fetchFullFavorites = async (): Promise<IFavoritesList> => {
         if (isAuthenticated) {
             return fetchFavorites();
         } else {
@@ -23,7 +23,7 @@ export const useFavorites = (invalidateQueries: unknown[][] = [['products']]) =>
             const productIds = localFavorites.map((item) => item.product.id);
             const products = await fetchProductsByIds(productIds);
 
-            return products.map((product) => {
+            const items = products.map((product) => {
                 const favoriteItem = localFavorites.find((item) => item.product.id === product.id);
                 return {
                     id: product.id,
@@ -31,11 +31,18 @@ export const useFavorites = (invalidateQueries: unknown[][] = [['products']]) =>
                     created_at: favoriteItem ? favoriteItem.created_at : new Date().toISOString(),
                 };
             });
+
+            return {
+                id: 0,
+                items: items,
+                updated_at: new Date().toISOString(),
+                created_at: new Date().toISOString(),
+            };
         }
     };
 
     const {
-        data: favorites,
+        data: favoritesList,
         isLoading,
         isError,
     } = useQuery({
@@ -102,7 +109,7 @@ export const useFavorites = (invalidateQueries: unknown[][] = [['products']]) =>
     });
 
     return {
-        favorites,
+        favoritesList,
         isLoading,
         isError,
         toggleFavorite,

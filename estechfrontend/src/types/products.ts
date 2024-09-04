@@ -23,7 +23,6 @@ export interface IProduct {
     average_rating: number | null;
     count_of_reviews: number;
     count_of_orders: number;
-    is_favorite: boolean;
 }
 
 export interface IAttribute {
@@ -43,6 +42,5 @@ export interface IProductDetail {
     count: number;
     count_of_reviews: number;
     count_of_orders: number;
-    is_favorite: boolean;
     attributes: IAttribute[];
 }
