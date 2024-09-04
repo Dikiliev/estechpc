@@ -1,8 +1,16 @@
-from django.urls import path
+from django.urls import path, include
 from .views import CartDetailView, AddProductToCartView, UpdateCartItemView, RemoveProductFromCartView, ClearCartView, \
-    OrderListCreateView, OrderDetailView
+    OrderListCreateView, OrderDetailView, FavoriteViewSet
+from rest_framework import routers
+
+
+router = routers.DefaultRouter()
+
+router.register(r'favorites', FavoriteViewSet, basename='favorite')
 
 urlpatterns = [
+    path('', include(router.urls)),
+
     path('cart/', CartDetailView.as_view(), name='cart-detail'),
     path('cart/add/', AddProductToCartView.as_view(), name='cart-add-product'),
     path('cart/update/<int:item_id>/', UpdateCartItemView.as_view(), name='cart-update-item'),

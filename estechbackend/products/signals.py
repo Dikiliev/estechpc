@@ -2,7 +2,9 @@
 
 from django.db.models.signals import post_save, post_delete, pre_save
 from django.dispatch import receiver
-from .models import Favorite, Product
+
+from orders.models import Like
+from .models import Product
 
 
 @receiver(pre_save, sender=Product)
@@ -22,8 +24,8 @@ def handle_price_history(sender, instance, created, **kwargs):
         instance.add_price_history(instance.price)
 
 
-@receiver(post_save, sender=Favorite)
-@receiver(post_delete, sender=Favorite)
+@receiver(post_save, sender=Like)
+@receiver(post_delete, sender=Like)
 def update_favorites_count(sender, instance, **kwargs):
     product = instance.product
     product.count_of_likes = product.favorites.count()

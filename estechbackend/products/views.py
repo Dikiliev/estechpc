@@ -8,9 +8,9 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.decorators import action
 
-from products.models import Product, Category, Filter, Favorite
+from products.models import Product, Category, Filter
 from .serializers import ProductSerializer, ProductDetailSerializer, CategorySerializer, CategoryFiltersSerializer, \
-    FilterSerializer, ParentCategorySerializer, ChildCategorySerializer, FavoriteSerializer
+    FilterSerializer, ParentCategorySerializer, ChildCategorySerializer
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
@@ -129,37 +129,6 @@ class CategoryFiltersView(APIView):
             })
         except Category.DoesNotExist:
             return Response({'error': 'Category not found'}, status=404)
-
-
-class FavoriteViewSet(viewsets.ViewSet):
-    permission_classes = [IsAuthenticated]
-
-    def list(self, request):
-        favorites = Favorite.objects.filter(user=request.user)
-        serializer = FavoriteSerializer(favorites, many=True, context={'request': request})
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-    def create(self, request):
-        product_id = request.data.get('product_id')
-        if not product_id:
-            return Response({'detail': 'Product ID is required'}, status=status.HTTP_400_BAD_REQUEST)
-
-        product = get_object_or_404(Product, id=product_id)
-
-        favorite, created = Favorite.objects.get_or_create(user=request.user, product=product)
-        if not created:
-            return Response({'detail': 'Product already in favorites'}, status=status.HTTP_400_BAD_REQUEST)
-
-        serializer = FavoriteSerializer(favorite)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-    def destroy(self, request, pk=None):
-        if pk is None:
-            return Response({'detail': 'Product ID is required'}, status=status.HTTP_400_BAD_REQUEST)
-
-        favorite = get_object_or_404(Favorite, user=request.user, product_id=pk)
-        favorite.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 import json

@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from products.models import Product
-from .models import Cart, CartItem, OrderItem, Order
+from .models import Cart, CartItem, OrderItem, Order, Like, LikesList
 from products.serializers import ProductSerializer
 
 
@@ -24,6 +24,23 @@ class CartSerializer(serializers.ModelSerializer):
     def get_total_amount(self, obj):
         total = sum(item.product.price * item.quantity for item in obj.items.all())
         return total
+
+
+class LikeSerializer(serializers.ModelSerializer):
+    product = ProductSerializer(read_only=True)
+
+    class Meta:
+        model = Like
+        fields = ['id', 'product', 'created_at']
+        read_only_fields = ['id', 'created_at']
+
+class LikesListSerializer(serializers.ModelSerializer):
+    items = LikeSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = LikesList
+        fields = ['id', 'user', 'created_at', 'updated_at', 'items']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'user']
 
 
 class OrderItemReadSerializer(serializers.ModelSerializer):

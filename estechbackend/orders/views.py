@@ -5,9 +5,10 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
 from django.db import transaction
+from rest_framework.viewsets import ViewSet
 
-from .models import Cart, CartItem, Product, Order
-from .serializers import CartSerializer, CartItemSerializer, OrderSerializer
+from .models import Cart, CartItem, Product, Order, Like, LikesList
+from .serializers import CartSerializer, CartItemSerializer, OrderSerializer, LikeSerializer
 
 
 class CartDetailView(generics.RetrieveAPIView):
@@ -82,7 +83,6 @@ class RemoveProductFromCartView(APIView):
         except CartItem.DoesNotExist:
             return Response({'success': False, 'message': 'Item not found'}, status=status.HTTP_404_NOT_FOUND)
 
-
 class ClearCartView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -91,7 +91,6 @@ class ClearCartView(APIView):
         cart = get_object_or_404(Cart, user=user)
         cart.items.all().delete()
         return Response({'success': True, 'message': 'Cart cleared'}, status=status.HTTP_200_OK)
-
 
 class OrderListCreateView(generics.ListCreateAPIView):
     queryset = Order.objects.all()
@@ -118,3 +117,39 @@ class OrderDetailView(generics.RetrieveAPIView):
         if order.user != self.request.user:
             raise PermissionDenied("Вы не можете просматривать этот заказ.")
         return order
+
+
+class FavoriteViewSet(ViewSet):
+    permission_classes = [IsAuthenticated]
+
+    def list(self, request):
+        favorites = Like.objects.filter(user=request.user)
+        serializer = LikeSerializer(favorites, many=True, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @transaction.atomic
+    def create(self, request):
+        user = request.user
+        likes_list, created = LikesList.objects.get_or_create(user=user)
+
+        product_id = request.data.get('product_id')
+        if not product_id:
+            return Response({'detail': 'Product ID is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+        product = get_object_or_404(Product, id=product_id)
+
+        favorite, created = Like.objects.get_or_create(list=likes_list, product=product)
+        if not created:
+            return Response({'detail': 'Product already in favorites'}, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = LikeSerializer(favorite)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    @transaction.atomic
+    def destroy(self, request, pk=None):
+        if pk is None:
+            return Response({'detail': 'Product ID is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+        favorite = get_object_or_404(Like, user=request.user, product_id=pk)
+        favorite.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
