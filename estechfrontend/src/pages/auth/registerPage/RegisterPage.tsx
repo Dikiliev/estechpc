@@ -1,4 +1,4 @@
-import { TextField, Button, Box, Typography, CircularProgress, Alert } from '@mui/material';
+import { TextField, Button, CircularProgress, Alert } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import React, { useState } from 'react';
 
@@ -6,6 +6,7 @@ import { observer } from 'mobx-react';
 import { useStore } from '@stores/StoreContext';
 import { useCart } from '@hooks/useCart';
 import { useFavorites } from '@hooks/useFavorites';
+import Form from '@components/form/Form';
 
 const RegisterPage = observer(() => {
     const { authStore } = useStore();
@@ -43,10 +44,7 @@ const RegisterPage = observer(() => {
     };
 
     return (
-        <Box component='form' onSubmit={handleSubmit} sx={{ maxWidth: 400, margin: 'auto', mt: 5, p: 2 }}>
-            <Typography variant='h5' component='h1' gutterBottom>
-                Регистрация
-            </Typography>
+        <Form onSubmit={handleSubmit} title='Регистрация'>
             {authStore.hasErrors() && (
                 <Alert severity='error' sx={{ mb: 2 }}>
                     {authStore.getErrorMessages()}
@@ -75,10 +73,10 @@ const RegisterPage = observer(() => {
             <Button type='submit' variant='contained' color='primary' fullWidth sx={{ mt: 2 }} disabled={loading}>
                 {loading ? <CircularProgress size={24} /> : 'Зарегистрироваться'}
             </Button>
-            <Typography onClick={() => navigate('/login')} color={'primary'} variant='body2' sx={{ mt: 2, textAlign: 'center' }}>
+            <Button variant='text' fullWidth size={'small'} component='a' sx={{ mt: 2 }} onClick={() => navigate('/login')}>
                 Уже есть аккаунт? Войти
-            </Typography>
-        </Box>
+            </Button>
+        </Form>
     );
 });
 

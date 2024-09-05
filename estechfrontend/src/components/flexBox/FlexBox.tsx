@@ -1,6 +1,7 @@
 import React from 'react';
-import { Box } from '@mui/material';
+import { Box, Theme } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { SxProps } from '@mui/system/styleFunctionSx';
 
 const FlexBoxStyled = styled(Box)(({ theme }) => ({
     display: 'flex',
@@ -17,7 +18,7 @@ interface FlexBoxProps {
     justifyContent?: 'flex-start' | 'center' | 'flex-end' | 'space-between' | 'space-around' | 'space-evenly';
     gap?: number | string;
     bgColor?: string;
-    sx?: object;
+    sx?: SxProps<Theme>;
 }
 
 const FlexBox: React.FC<FlexBoxProps> = ({

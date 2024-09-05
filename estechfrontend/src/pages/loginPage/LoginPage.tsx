@@ -1,10 +1,11 @@
-import { TextField, Button, Box, Typography, CircularProgress, Alert } from '@mui/material';
+import { TextField, Button, CircularProgress } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import React, { useState } from 'react';
 import { observer } from 'mobx-react';
 import { useStore } from '@stores/StoreContext';
 import { useCart } from '@hooks/useCart';
 import { useFavorites } from '@hooks/useFavorites';
+import Form from '@components/form/Form';
 
 const LoginPage = observer(() => {
     const { authStore } = useStore();
@@ -38,15 +39,7 @@ const LoginPage = observer(() => {
     };
 
     return (
-        <Box component='form' onSubmit={handleSubmit} sx={{ maxWidth: 300, margin: 'auto', mt: 5 }}>
-            <Typography variant='h5' component='h1' gutterBottom>
-                Вход
-            </Typography>
-            {authStore.hasErrors() && (
-                <Alert severity='error' sx={{ mb: 2 }}>
-                    {authStore.getErrorMessages()}
-                </Alert>
-            )}
+        <Form onSubmit={handleSubmit} title='Вход'>
             <TextField label='Имя пользователя' value={username} onChange={(e) => setUsername(e.target.value)} fullWidth margin='normal' required />
             <TextField
                 label='Пароль'
@@ -60,15 +53,10 @@ const LoginPage = observer(() => {
             <Button type='submit' variant='contained' color='primary' fullWidth sx={{ mt: 2 }} disabled={loading}>
                 {loading ? <CircularProgress size={24} /> : 'Войти'}
             </Button>
-            <Typography
-                variant='body2'
-                component='a'
-                sx={{ mt: 2, display: 'block', textAlign: 'center', color: 'primary.main', cursor: 'pointer' }}
-                onClick={handleNavigateToRegister}
-            >
+            <Button variant='text' fullWidth size={'small'} component='a' sx={{ mt: 2 }} onClick={handleNavigateToRegister}>
                 Нет аккаунта? Зарегистрируйтесь
-            </Typography>
-        </Box>
+            </Button>
+        </Form>
     );
 });
 
