@@ -9,8 +9,11 @@ import FixedBottomBar from './FixedBottomBar';
 import theme from '@styles/theme';
 import { useNavigate } from 'react-router-dom';
 import CartEmptyStateComponent from '@pages/cartPage/CartEmptyStateComponent';
+import { useStore } from '@stores/StoreContext';
 
 const CartPage: React.FC = () => {
+    const { authStore } = useStore();
+
     const { cart, isLoadingCart, isErrorCart, error, clearCart, isClearing, updateCartItem, removeProductFromCart } = useCart();
     const [selectedItems, setSelectedItems] = useState<number[]>([]);
     const summaryRef = useRef<HTMLDivElement>(null);
@@ -64,7 +67,12 @@ const CartPage: React.FC = () => {
     };
 
     const handleCheckout = () => {
-        navigate('/checkout');
+        if (authStore.isAuthenticated) {
+            navigate('/checkout');
+            return;
+        }
+
+        navigate('/login');
     };
 
     if (isLoadingCart) {
@@ -115,6 +123,7 @@ const CartPage: React.FC = () => {
                         selectedItems={getSelectedItems()}
                         totalAmount={getTotalAmount()}
                         isCheckoutDisabled={selectedItems.length === 0}
+                        onCheckout={handleCheckout}
                     />
                 </Box>
             </Box>

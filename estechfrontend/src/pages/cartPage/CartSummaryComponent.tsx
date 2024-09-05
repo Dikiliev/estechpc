@@ -9,9 +9,10 @@ interface CartSummaryProps {
     selectedItems: CartItemType[];
     totalAmount: number;
     isCheckoutDisabled: boolean;
+    onCheckout: () => void;
 }
 
-const CartSummaryComponent: React.FC<CartSummaryProps> = ({ selectedItems, totalAmount, isCheckoutDisabled }) => {
+const CartSummaryComponent: React.FC<CartSummaryProps> = ({ selectedItems, totalAmount, isCheckoutDisabled, onCheckout }) => {
     const navigate = useNavigate();
 
     return (
@@ -36,14 +37,14 @@ const CartSummaryComponent: React.FC<CartSummaryProps> = ({ selectedItems, total
             <Button
                 variant='contained'
                 color='primary'
-                onClick={() => navigate('/checkout')}
+                onClick={onCheckout}
                 sx={{
                     textTransform: 'none',
                     fontWeight: 'bold',
                     padding: theme.spacing(1.5, 5),
                     borderRadius: 2,
                     width: '100%',
-                    mb: 2, // Отступ снизу
+                    mb: 2,
                 }}
                 disabled={isCheckoutDisabled}
             >

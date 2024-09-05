@@ -20,8 +20,8 @@ urlpatterns = [
     path('cart/clear/', ClearCartView.as_view(), name='cart-clear'),
 
     # Маршруты для заказов
-    path('orders/', OrderListCreateView.as_view(), name='order-list-create'),
-    path('orders/<int:pk>/', OrderDetailView.as_view(), name='order-detail'),
+    path('list/', OrderListCreateView.as_view(), name='order-list-create'),
+    path('list/<int:pk>/', OrderDetailView.as_view(), name='order-detail'),
 
     # Маршруты для избранных товаров
     path('favorites/', FavoritesDetailView.as_view(), name='favorites-detail'),
