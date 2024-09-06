@@ -1,6 +1,6 @@
 import React from 'react';
-import { Paper, Typography, Button, List, ListItem, ListItemText, Divider } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { Paper, Typography, Button, List, ListItem, ListItemText, Divider, Card, Box, Alert } from '@mui/material';
+import InfoIcon from '@mui/icons-material/Info';
 import theme from '@styles/theme';
 import { ICartItem as CartItemType } from 'types/cart';
 import { formatPrice } from '@utils/formatPrice';
@@ -13,8 +13,6 @@ interface CartSummaryProps {
 }
 
 const CartSummaryComponent: React.FC<CartSummaryProps> = ({ selectedItems, totalAmount, isCheckoutDisabled, onCheckout }) => {
-    const navigate = useNavigate();
-
     return (
         <Paper
             sx={{
@@ -52,19 +50,27 @@ const CartSummaryComponent: React.FC<CartSummaryProps> = ({ selectedItems, total
             </Button>
 
             <Divider sx={{ my: 2 }} />
-            <Typography variant='h6' sx={{ mb: 2 }}>
-                Ваша корзина
-            </Typography>
-            <List disablePadding>
-                {selectedItems.map((item) => (
-                    <ListItem key={item.id} disableGutters>
-                        <ListItemText primary={`${item.product.name}`} secondary={`Количество: ${item.quantity}`} />
-                        <Typography variant='body2' sx={{ fontWeight: 'bold' }}>
-                            {item.product.price.toLocaleString('ru-RU')} ₽
-                        </Typography>
-                    </ListItem>
-                ))}
-            </List>
+            {!isCheckoutDisabled ? (
+                <>
+                    <Typography variant='h6' sx={{ mb: 2 }}>
+                        Ваша корзина
+                    </Typography>
+                    <List disablePadding>
+                        {selectedItems.map((item) => (
+                            <ListItem key={item.id} disableGutters>
+                                <ListItemText primary={`${item.product.name}`} secondary={`Количество: ${item.quantity}`} />
+                                <Typography variant='body2' sx={{ fontWeight: 'bold' }}>
+                                    {item.product.price.toLocaleString('ru-RU')} ₽
+                                </Typography>
+                            </ListItem>
+                        ))}
+                    </List>
+                </>
+            ) : (
+                <Alert icon={<InfoIcon />} severity='warning'>
+                    <Typography variant='body1'>Выберите товары, чтобы перейти к оформлению заказа</Typography>
+                </Alert>
+            )}
         </Paper>
     );
 };

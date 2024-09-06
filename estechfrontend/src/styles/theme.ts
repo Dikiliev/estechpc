@@ -44,6 +44,10 @@ const theme = createTheme({
             main: '#307ef2',
             contrastText: '#ffffff',
         },
+        warning: {
+            main: '#FF885B',
+            contrastText: '#ffffff',
+        },
     },
     typography: {
         fontFamily: 'Manrope',
