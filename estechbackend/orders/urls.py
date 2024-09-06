@@ -2,7 +2,7 @@ from django.urls import path, include
 from .views import (
     CartDetailView, AddProductToCartView, UpdateCartItemView, RemoveProductFromCartView, ClearCartView,
     OrderListCreateView, OrderDetailView, FavoritesDetailView, AddProductToFavoritesView,
-    RemoveProductFromFavoritesView, ClearFavoritesView, RemoveSelectedCartItemsView
+    RemoveProductFromFavoritesView, ClearFavoritesView, RemoveSelectedCartItemsView, BulkUpdateCartItemsView
 )
 from rest_framework import routers
 
@@ -16,6 +16,7 @@ urlpatterns = [
     path('cart/', CartDetailView.as_view(), name='cart-detail'),
     path('cart/add/', AddProductToCartView.as_view(), name='cart-add-product'),
     path('cart/update/<int:item_id>/', UpdateCartItemView.as_view(), name='cart-update-item'),
+    path('cart/bulk-update/', BulkUpdateCartItemsView.as_view(), name='cart-bulk-update'),
     path('cart/remove/<int:item_id>/', RemoveProductFromCartView.as_view(), name='cart-remove-product'),
     path('cart/remove-selected/', RemoveSelectedCartItemsView.as_view(), name='cart-remove-selected'),
     path('cart/clear/', ClearCartView.as_view(), name='cart-clear'),

@@ -77,6 +77,37 @@ class UpdateCartItemView(APIView):
             return Response({'success': False, 'message': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
+class BulkUpdateCartItemsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    @transaction.atomic
+    def patch(self, request, *args, **kwargs):
+        user = request.user
+        cart = Cart.objects.get(user=user)
+
+        # Получаем список товаров для обновления
+        items_data = request.data.get('items', [])
+
+        if not items_data:
+            return Response({'detail': 'No items provided for update'}, status=status.HTTP_400_BAD_REQUEST)
+
+        updated_items = []
+        for item_data in items_data:
+            try:
+                cart_item = CartItem.objects.get(cart=cart, id=item_data['item_id'])
+                if 'quantity' in item_data:
+                    cart_item.quantity = item_data['quantity']
+                if 'is_selected' in item_data:
+                    cart_item.is_selected = item_data['is_selected']
+                cart_item.save()
+                updated_items.append(cart_item)
+            except CartItem.DoesNotExist:
+                continue
+
+        serializer = CartItemSerializer(updated_items, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
 class RemoveProductFromCartView(APIView):
     permission_classes = [IsAuthenticated]
 
