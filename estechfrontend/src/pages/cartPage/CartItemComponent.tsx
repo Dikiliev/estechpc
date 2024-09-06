@@ -17,6 +17,7 @@ interface CartItemProps {
 const CartItemComponent: React.FC<CartItemProps> = ({ item, selected, onSelect, onIncrease, onDecrease, onRemove }) => {
     return (
         <>
+            <Divider sx={{ my: 2 }} />
             <Box
                 display='flex'
                 flexDirection={{ xs: 'column', sm: 'row' }} // Колонка на малых экранах, ряд на больших
@@ -30,7 +31,7 @@ const CartItemComponent: React.FC<CartItemProps> = ({ item, selected, onSelect, 
                         src={item.product.photos[0]?.photo || DEFAULT_PRODUCT_IMAGE}
                         alt={item.product.name}
                         sx={{
-                            width: { xs: 80, sm: 100 }, // Меньший размер на мобильных
+                            width: { xs: 80, sm: 100 },
                             height: { xs: 80, sm: 100 },
                             objectFit: 'cover',
                             borderRadius: 2,
@@ -64,7 +65,6 @@ const CartItemComponent: React.FC<CartItemProps> = ({ item, selected, onSelect, 
                     </IconButton>
                 </Box>
             </Box>
-            <Divider sx={{ my: 2 }} />
         </>
     );
 };

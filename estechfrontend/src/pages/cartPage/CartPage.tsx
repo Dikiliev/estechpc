@@ -19,20 +19,24 @@ const CartPage: React.FC = () => {
         isLoadingCart,
         isErrorCart,
         error,
-        clearCart,
-        isClearing,
         updateCartItem,
         removeProductFromCart,
-        updateItemSelection,
+        bulkUpdateCartItems,
         removeSelectedItems,
         isRemovingSelected,
     } = useCart();
 
+    const [allSelected, setAllSelected] = useState(false);
     const summaryRef = useRef<HTMLDivElement>(null);
     const [isSummaryVisible, setIsSummaryVisible] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
+        if (cart) {
+            const allItemsSelected = cart.items.every((item) => item.is_selected);
+            setAllSelected(allItemsSelected);
+        }
+
         const handleScroll = () => {
             if (summaryRef.current) {
                 const summaryTop = summaryRef.current.getBoundingClientRect().top;
@@ -44,7 +48,7 @@ const CartPage: React.FC = () => {
         return () => {
             window.removeEventListener('scroll', handleScroll);
         };
-    }, []);
+    }, [cart]);
 
     const handleIncrease = (itemId: number, currentQuantity: number) => {
         updateCartItem({ itemId, quantity: currentQuantity + 1 });
@@ -61,11 +65,23 @@ const CartPage: React.FC = () => {
     };
 
     const handleSelectItem = (itemId: number, isSelected: boolean) => {
-        updateItemSelection({ itemId, isSelected: !isSelected });
+        bulkUpdateCartItems({ items: [{ item_id: itemId, is_selected: !isSelected }] });
     };
 
     const handleRemoveSelectedItems = () => {
         removeSelectedItems();
+    };
+
+    const handleToggleSelectAll = () => {
+        if (!cart) return;
+
+        const itemsToUpdate = cart.items.map((item) => ({
+            item_id: item.id,
+            is_selected: !allSelected,
+        }));
+
+        bulkUpdateCartItems({ items: itemsToUpdate });
+        setAllSelected(!allSelected);
     };
 
     const getTotalAmount = () => {
@@ -116,6 +132,12 @@ const CartPage: React.FC = () => {
                             boxShadow: `0px 4px 10px rgba(0, 0, 0, 0.1)`,
                         }}
                     >
+                        <CartActionsComponent
+                            onRemoveSelectedItems={handleRemoveSelectedItems}
+                            isRemovingSelected={isRemovingSelected}
+                            onToggleSelectAll={handleToggleSelectAll}
+                            areAllItemsSelected={allSelected}
+                        />
                         {cart.items.map((item) => (
                             <CartItemComponent
                                 key={item.id}
@@ -127,12 +149,6 @@ const CartPage: React.FC = () => {
                                 onRemove={() => handleRemove(item.id)}
                             />
                         ))}
-                        <CartActionsComponent
-                            isClearing={isClearing}
-                            onClearCart={clearCart}
-                            onRemoveSelectedItems={handleRemoveSelectedItems}
-                            isRemovingSelected={isRemovingSelected}
-                        />
                     </Paper>
                 </Box>
                 <Box width={{ xs: '100%', sm: '30%' }} ref={summaryRef}>

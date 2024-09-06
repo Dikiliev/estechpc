@@ -37,3 +37,8 @@ export const updateCartItemSelection = async (itemId: number, isSelected: boolea
 export const removeSelectedCartItems = async (): Promise<void> => {
     await apiInstance.delete('/orders/cart/remove-selected/');
 };
+
+// Массивное обновление товаров в корзине (выбор или количество)
+export const bulkUpdateCartItems = async (items: { item_id: number; quantity?: number; is_selected?: boolean }[]): Promise<void> => {
+    await apiInstance.patch('/orders/cart/bulk-update/', { items });
+};

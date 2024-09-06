@@ -7,6 +7,7 @@ import {
     clearCart,
     updateCartItemSelection,
     removeSelectedCartItems,
+    bulkUpdateCartItems,
 } from '@api/cart';
 import {
     fetchLocalCart,
@@ -16,6 +17,7 @@ import {
     clearLocalCart,
     updateLocalCartItemSelection,
     removeSelectedLocalCartItems,
+    bulkUpdateLocalCartItems,
 } from '@api/cartLocal';
 import { ICart, ICartItem } from 'types/cart';
 import { fetchProductsByIds } from '@api/products';
@@ -165,6 +167,20 @@ export const useCart = () => {
         },
     });
 
+    // Мутация для массового обновления товаров
+    const bulkUpdateCartItemsMutation = useMutation<void, Error, { items: { item_id: number; quantity?: number; is_selected?: boolean }[] }>({
+        mutationFn: async ({ items }) => {
+            if (isAuthenticated) {
+                await bulkUpdateCartItems(items);
+            } else {
+                bulkUpdateLocalCartItems(items);
+            }
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['cart'] });
+        },
+    });
+
     return {
         cart,
         isLoadingCart,
@@ -176,6 +192,7 @@ export const useCart = () => {
         clearCart: clearCartMutation.mutate,
         updateItemSelection: updateItemSelectionMutation.mutate,
         removeSelectedItems: removeSelectedItemsMutation.mutate,
+        bulkUpdateCartItems: bulkUpdateCartItemsMutation.mutate,
         isAdding: addProductToCartMutation.isPending,
         isUpdating: updateCartItemMutation.isPending,
         isRemoving: removeProductFromCartMutation.isPending,

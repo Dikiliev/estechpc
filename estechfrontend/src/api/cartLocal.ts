@@ -69,3 +69,23 @@ export const removeSelectedLocalCartItems = () => {
     cart.items = cart.items.filter((item) => !item.is_selected);
     saveLocalCart(cart);
 };
+
+// Массовое обновление товаров в локальной корзине (для обновления количества или is_selected)
+export const bulkUpdateLocalCartItems = (items: { item_id: number; quantity?: number; is_selected?: boolean }[]) => {
+    const cart = fetchLocalCart();
+
+    items.forEach(({ item_id, quantity, is_selected }) => {
+        const item = cart.items.find((item) => item.product.id === item_id);
+
+        if (item) {
+            if (quantity !== undefined) {
+                item.quantity = quantity;
+            }
+            if (is_selected !== undefined) {
+                item.is_selected = is_selected;
+            }
+        }
+    });
+
+    saveLocalCart(cart);
+};

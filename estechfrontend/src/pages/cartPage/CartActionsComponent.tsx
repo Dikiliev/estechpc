@@ -1,16 +1,26 @@
 import React from 'react';
-import { Button, CircularProgress } from '@mui/material';
+import { Button, CircularProgress, Box, Checkbox, FormControlLabel } from '@mui/material';
 
 interface CartActionsProps {
-    isClearing: boolean;
-    onClearCart: () => void;
+    isRemovingSelected: boolean;
+    onRemoveSelectedItems: () => void;
+
+    onToggleSelectAll: () => void;
+    areAllItemsSelected: boolean;
 }
 
-const CartActionsComponent: React.FC<CartActionsProps> = ({ isClearing, onClearCart }) => {
+const CartActionsComponent: React.FC<CartActionsProps> = ({ isRemovingSelected, onRemoveSelectedItems, onToggleSelectAll, areAllItemsSelected }) => {
     return (
-        <Button variant='text' color='error' size='large' onClick={onClearCart} disabled={isClearing}>
-            {isClearing ? <CircularProgress size={24} /> : 'Очистить корзину'}
-        </Button>
+        <Box display='flex' justifyContent='start' alignItems='center'>
+            <FormControlLabel
+                control={<Checkbox checked={areAllItemsSelected} onChange={onToggleSelectAll} color='primary' />}
+                label={areAllItemsSelected ? 'Отменить выбор всех' : 'Выбрать все'}
+            />
+
+            <Button variant='text' color='error' size='large' onClick={onRemoveSelectedItems} disabled={isRemovingSelected}>
+                {isRemovingSelected ? <CircularProgress size={24} /> : 'Удалить выбранные товары'}
+            </Button>
+        </Box>
     );
 };
 
