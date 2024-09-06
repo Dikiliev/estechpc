@@ -5,6 +5,7 @@ import { IProduct } from 'types/products';
 export interface ILocalCartItem {
     product: { id: number }; // Храним только id продукта
     quantity: number;
+    is_selected: boolean;
 }
 
 export interface ILocalCart {
@@ -15,6 +16,7 @@ export interface ICartItem {
     id: number;
     product: IProduct;
     quantity: number;
+    is_selected: boolean;
 }
 
 export interface ICart {

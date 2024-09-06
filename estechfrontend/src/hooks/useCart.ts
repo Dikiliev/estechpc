@@ -1,6 +1,22 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { fetchCart, addProductToCart, updateCartItem, removeProductFromCart, clearCart } from '@api/cart';
-import { fetchLocalCart, addProductToLocalCart, updateLocalCartItem, removeProductFromLocalCart, clearLocalCart } from '@api/cartLocal';
+import {
+    fetchCart,
+    addProductToCart,
+    updateCartItem,
+    removeProductFromCart,
+    clearCart,
+    updateCartItemSelection,
+    removeSelectedCartItems,
+} from '@api/cart';
+import {
+    fetchLocalCart,
+    addProductToLocalCart,
+    updateLocalCartItem,
+    removeProductFromLocalCart,
+    clearLocalCart,
+    updateLocalCartItemSelection,
+    removeSelectedLocalCartItems,
+} from '@api/cartLocal';
 import { ICart, ICartItem } from 'types/cart';
 import { fetchProductsByIds } from '@api/products';
 import { rootStore } from '@src/stores';
@@ -122,6 +138,33 @@ export const useCart = () => {
         },
     });
 
+    // Мутации для работы с is_selected
+    const updateItemSelectionMutation = useMutation<void, Error, { itemId: number; isSelected: boolean }>({
+        mutationFn: async ({ itemId, isSelected }) => {
+            if (isAuthenticated) {
+                await updateCartItemSelection(itemId, isSelected);
+            } else {
+                updateLocalCartItemSelection(itemId, isSelected);
+            }
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['cart'] });
+        },
+    });
+
+    const removeSelectedItemsMutation = useMutation<void, Error, void>({
+        mutationFn: async () => {
+            if (isAuthenticated) {
+                await removeSelectedCartItems();
+            } else {
+                removeSelectedLocalCartItems();
+            }
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['cart'] });
+        },
+    });
+
     return {
         cart,
         isLoadingCart,
@@ -131,10 +174,14 @@ export const useCart = () => {
         updateCartItem: updateCartItemMutation.mutate,
         removeProductFromCart: removeProductFromCartMutation.mutate,
         clearCart: clearCartMutation.mutate,
+        updateItemSelection: updateItemSelectionMutation.mutate,
+        removeSelectedItems: removeSelectedItemsMutation.mutate,
         isAdding: addProductToCartMutation.isPending,
         isUpdating: updateCartItemMutation.isPending,
         isRemoving: removeProductFromCartMutation.isPending,
         isClearing: clearCartMutation.isPending,
+        isUpdatingSelection: updateItemSelectionMutation.isPending,
+        isRemovingSelected: removeSelectedItemsMutation.isPending,
 
         syncLocalCartToServer: syncLocalCartToServer.mutate,
     };

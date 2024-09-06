@@ -50,18 +50,27 @@ class UpdateCartItemView(APIView):
         cart = get_object_or_404(Cart, user=user)
         item_id = kwargs.get('item_id')
         quantity = request.data.get('quantity')
-
-        if not isinstance(quantity, int) or quantity < 0:
-            return Response({'success': False, 'message': 'Invalid quantity'}, status=status.HTTP_400_BAD_REQUEST)
+        is_selected = request.data.get('is_selected')
 
         try:
             cart_item = CartItem.objects.get(cart=cart, id=item_id)
-            if quantity > 0:
-                cart_item.quantity = quantity
-                cart_item.save()
-            else:
-                cart_item.delete()
+
+            if quantity is not None:
+                if not isinstance(quantity, int) or quantity < 0:
+                    return Response({'success': False, 'message': 'Invalid quantity'}, status=status.HTTP_400_BAD_REQUEST)
+
+                if quantity > 0:
+                    cart_item.quantity = quantity
+                else:
+                    cart_item.delete()
+                    return Response({'success': True, 'message': 'Item removed'}, status=status.HTTP_200_OK)
+
+            if is_selected is not None:
+                cart_item.is_selected = is_selected
+
+            cart_item.save()
             return Response({'success': True, 'message': 'Item updated'}, status=status.HTTP_200_OK)
+
         except CartItem.DoesNotExist:
             return Response({'success': False, 'message': 'Item not found'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
@@ -82,6 +91,20 @@ class RemoveProductFromCartView(APIView):
             return Response({'success': True, 'message': 'Product removed from cart'}, status=status.HTTP_200_OK)
         except CartItem.DoesNotExist:
             return Response({'success': False, 'message': 'Item not found'}, status=status.HTTP_404_NOT_FOUND)
+
+class RemoveSelectedCartItemsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, *args, **kwargs):
+        user = request.user
+        cart = get_object_or_404(Cart, user=user)
+        selected_items = cart.items.filter(is_selected=True)
+
+        if selected_items.exists():
+            selected_items.delete()
+            return Response({'success': True, 'message': 'Selected items removed'}, status=status.HTTP_200_OK)
+        else:
+            return Response({'success': False, 'message': 'No selected items found'}, status=status.HTTP_404_NOT_FOUND)
 
 class ClearCartView(APIView):
     permission_classes = [IsAuthenticated]

@@ -14,17 +14,25 @@ import { useStore } from '@stores/StoreContext';
 const CartPage: React.FC = () => {
     const { authStore } = useStore();
 
-    const { cart, isLoadingCart, isErrorCart, error, clearCart, isClearing, updateCartItem, removeProductFromCart } = useCart();
-    const [selectedItems, setSelectedItems] = useState<number[]>([]);
+    const {
+        cart,
+        isLoadingCart,
+        isErrorCart,
+        error,
+        clearCart,
+        isClearing,
+        updateCartItem,
+        removeProductFromCart,
+        updateItemSelection,
+        removeSelectedItems,
+        isRemovingSelected,
+    } = useCart();
+
     const summaryRef = useRef<HTMLDivElement>(null);
     const [isSummaryVisible, setIsSummaryVisible] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (cart) {
-            setSelectedItems(cart.items.map((item) => item.id));
-        }
-
         const handleScroll = () => {
             if (summaryRef.current) {
                 const summaryTop = summaryRef.current.getBoundingClientRect().top;
@@ -36,7 +44,7 @@ const CartPage: React.FC = () => {
         return () => {
             window.removeEventListener('scroll', handleScroll);
         };
-    }, [cart]);
+    }, []);
 
     const handleIncrease = (itemId: number, currentQuantity: number) => {
         updateCartItem({ itemId, quantity: currentQuantity + 1 });
@@ -52,18 +60,22 @@ const CartPage: React.FC = () => {
         removeProductFromCart(itemId);
     };
 
-    const handleSelectItem = (itemId: number) => {
-        setSelectedItems((prevSelected) => (prevSelected.includes(itemId) ? prevSelected.filter((id) => id !== itemId) : [...prevSelected, itemId]));
+    const handleSelectItem = (itemId: number, isSelected: boolean) => {
+        updateItemSelection({ itemId, isSelected: !isSelected });
+    };
+
+    const handleRemoveSelectedItems = () => {
+        removeSelectedItems();
     };
 
     const getTotalAmount = () => {
         if (!cart) return 0;
-        return cart.items.filter((item) => selectedItems.includes(item.id)).reduce((total, item) => total + item.product.price * item.quantity, 0);
+        return cart.items.filter((item) => item.is_selected).reduce((total, item) => total + item.product.price * item.quantity, 0);
     };
 
     const getSelectedItems = () => {
         if (!cart) return [];
-        return cart.items.filter((item) => selectedItems.includes(item.id));
+        return cart.items.filter((item) => item.is_selected);
     };
 
     const handleCheckout = () => {
@@ -108,27 +120,32 @@ const CartPage: React.FC = () => {
                             <CartItemComponent
                                 key={item.id}
                                 item={item}
-                                selected={selectedItems.includes(item.id)}
-                                onSelect={() => handleSelectItem(item.id)}
+                                selected={item.is_selected}
+                                onSelect={() => handleSelectItem(item.id, item.is_selected)}
                                 onIncrease={() => handleIncrease(item.id, item.quantity)}
                                 onDecrease={() => handleDecrease(item.id, item.quantity)}
                                 onRemove={() => handleRemove(item.id)}
                             />
                         ))}
-                        <CartActionsComponent isClearing={isClearing} onClearCart={clearCart} />
+                        <CartActionsComponent
+                            isClearing={isClearing}
+                            onClearCart={clearCart}
+                            onRemoveSelectedItems={handleRemoveSelectedItems}
+                            isRemovingSelected={isRemovingSelected}
+                        />
                     </Paper>
                 </Box>
                 <Box width={{ xs: '100%', sm: '30%' }} ref={summaryRef}>
                     <CartSummaryComponent
                         selectedItems={getSelectedItems()}
                         totalAmount={getTotalAmount()}
-                        isCheckoutDisabled={selectedItems.length === 0}
+                        isCheckoutDisabled={getSelectedItems().length === 0}
                         onCheckout={handleCheckout}
                     />
                 </Box>
             </Box>
             {!isSummaryVisible && (
-                <FixedBottomBar totalAmount={getTotalAmount()} isCheckoutDisabled={selectedItems.length === 0} onCheckout={handleCheckout} />
+                <FixedBottomBar totalAmount={getTotalAmount()} isCheckoutDisabled={getSelectedItems().length === 0} onCheckout={handleCheckout} />
             )}
         </Container>
     );

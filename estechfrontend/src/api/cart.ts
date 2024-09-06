@@ -27,3 +27,13 @@ export const removeProductFromCart = async (itemId: number): Promise<void> => {
 export const clearCart = async (): Promise<void> => {
     await apiInstance.post('/orders/cart/clear/');
 };
+
+// Обновление статуса выбора (is_selected) товара в корзине
+export const updateCartItemSelection = async (itemId: number, isSelected: boolean): Promise<void> => {
+    await apiInstance.patch(`/orders/cart/update/${itemId}/`, { is_selected: isSelected });
+};
+
+// Удаление всех выбранных товаров из корзины
+export const removeSelectedCartItems = async (): Promise<void> => {
+    await apiInstance.delete('/orders/cart/remove-selected/');
+};

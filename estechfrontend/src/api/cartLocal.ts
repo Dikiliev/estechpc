@@ -23,7 +23,7 @@ export const addProductToLocalCart = (productId: number, quantity: number = 1) =
     if (existingItem) {
         existingItem.quantity += quantity;
     } else {
-        cart.items.push({ product: { id: productId }, quantity });
+        cart.items.push({ product: { id: productId }, quantity, is_selected: true });
     }
 
     saveLocalCart(cart);
@@ -50,4 +50,22 @@ export const removeProductFromLocalCart = (itemId: number) => {
 // Очистка локальной корзины
 export const clearLocalCart = () => {
     localStorage.removeItem(CART_KEY);
+};
+
+// Обновление статуса выбора (is_selected) товара в локальной корзине
+export const updateLocalCartItemSelection = (itemId: number, isSelected: boolean) => {
+    const cart = fetchLocalCart();
+    const item = cart.items.find((item) => item.product.id === itemId);
+
+    if (item) {
+        item.is_selected = isSelected;
+        saveLocalCart(cart);
+    }
+};
+
+// Удаление всех выбранных товаров из локальной корзины
+export const removeSelectedLocalCartItems = () => {
+    const cart = fetchLocalCart();
+    cart.items = cart.items.filter((item) => !item.is_selected);
+    saveLocalCart(cart);
 };
