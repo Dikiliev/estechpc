@@ -1,38 +1,28 @@
-import React from 'react';
-import { useInfiniteQuery } from '@tanstack/react-query';
-import { Grid, Container, Typography, CircularProgress, Tabs, Tab } from '@mui/material';
-import { fetchAllProducts } from '@api/products';
+import React, { useState } from 'react';
+import { Grid, Container, Typography, CircularProgress, Tabs, Tab, Box, Skeleton } from '@mui/material';
 import ProductList from '@components/productList/ProductList';
 import ErrorText from '@components/errorText/ErrorText';
-import { useInView } from 'react-intersection-observer';
 import LoadingBox from '@components/loadingBox/LoadingBox';
 import { useProducts } from '@hooks/useProducts';
-import { useParams } from 'react-router-dom';
-import { useProductFilters } from '@hooks/useProductFilters';
-import { useFilters } from '@hooks/useFilters';
-import { BreadcrumbsComponent } from '@pages/categorySelector/BreadcrumbsComponent';
-import FiltersDrawer from '@pages/productsPage/FiltersDrawer';
-import theme from '@styles/theme';
-import FiltersPanel from '@components/filtersPanel/FiltersPanel';
-
-const categories = [
-    { id: 1, name: 'Все категории' },
-    { id: 2, name: 'Электроника' },
-    { id: 3, name: 'Одежда' },
-    { id: 4, name: 'Книги' },
-    // Добавьте другие категории по необходимости
-];
+import { useCategories } from '@hooks/useCategories';
 
 const HitCatalog: React.FC = () => {
-    const categoryID = 0;
+    const [categoryId, setCategoryId] = useState<number | undefined>(undefined);
 
-    const { products, ref, isFetchingNextPage, productsLoading, productsError } = useProducts(categoryID);
+    const { data: categories, isLoading: categoriesLoading, isError: categoriesError } = useCategories({ hasProducts: true });
+    const { products, ref, isFetchingNextPage, productsLoading, productsError } = useProducts(categoryId);
 
-    if (productsLoading) {
+    const handleSetCategory = (event: React.SyntheticEvent, value: number) => {
+        setCategoryId(value);
+    };
+
+    const renderTabsSkeletons = () => <Skeleton width={'100%'} height={48} sx={{ mb: '24px' }} />;
+
+    if (productsLoading || categoriesLoading) {
         return <LoadingBox />;
     }
 
-    if (productsError) {
+    if (productsError || categoriesError) {
         return <ErrorText>Ошибка загрузки данных.</ErrorText>;
     }
 
@@ -43,22 +33,25 @@ const HitCatalog: React.FC = () => {
             </Typography>
 
             {/* Табы для выбора категорий */}
-            <Tabs
-                // value={selectedCategory}
-                // onChange={handleCategoryChange}
-                variant='scrollable'
-                scrollButtons='auto'
-                aria-label='Категории продуктов'
-                sx={{ mb: 3 }}
-            >
-                {categories.map((category) => (
-                    <Tab key={category.id} label={category.name} value={category.id} />
-                ))}
-            </Tabs>
+            {!categoriesLoading ? (
+                <Tabs
+                    value={categoryId}
+                    onChange={handleSetCategory}
+                    variant='scrollable'
+                    scrollButtons='auto'
+                    aria-label='Категории продуктов'
+                    sx={{ mb: 3 }}
+                >
+                    <Tab label={'Все категории'} value={undefined} />
+                    {categories?.map((category) => <Tab key={category.id} label={category.name} value={category.id} />)}
+                </Tabs>
+            ) : (
+                renderTabsSkeletons()
+            )}
 
             <Grid container spacing={2}>
                 <Grid item xs={12}>
-                    <ProductList products={products} queryKeys={[categoryID]} />
+                    <ProductList products={products} queryKeys={[[categoryId]]} />
                 </Grid>
                 <Grid item xs={12} ref={ref} sx={{ textAlign: 'center', mt: 2 }}>
                     {isFetchingNextPage && <CircularProgress />}

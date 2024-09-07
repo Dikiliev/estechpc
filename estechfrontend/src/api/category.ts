@@ -1,9 +1,19 @@
 import apiInstance from '@api/axios';
 import { Category, ParentCategory, ChildCategory } from 'types/category';
 
-// Получение списка категорий по родительскому ID
-export const fetchCategories = async (parentId: number | null): Promise<Category[]> => {
-    const response = await apiInstance.get<Category[]>(`/products/categories/?parent_id=${parentId !== null ? parentId : 0}`);
+// Получение списка категорий с опциональными параметрами
+export const fetchCategories = async (parentId?: number | null, hasProducts?: boolean): Promise<Category[]> => {
+    const params = new URLSearchParams();
+
+    if (parentId !== undefined) {
+        params.append('parent_id', parentId !== null ? parentId.toString() : '0');
+    }
+
+    if (hasProducts) {
+        params.append('has_products', 'true');
+    }
+
+    const response = await apiInstance.get<Category[]>(`/products/categories/?${params.toString()}`);
     return response.data;
 };
 

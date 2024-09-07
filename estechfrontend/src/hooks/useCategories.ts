@@ -1,11 +1,28 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, UseQueryResult } from '@tanstack/react-query';
 import { fetchCategories, fetchCategoryPath } from '@api/category';
 import { Category, ParentCategory } from 'types/category';
 
-export const useCategories = (parentId: number | null) => {
+/**
+ * useCategories - Хук для получения категорий.
+ *
+ * @param {number | null} parentId - ID родительской категории. Если null, возвращаются только категории верхнего уровня.
+ * @param {boolean} hasProducts - Если true, возвращаются только категории с продуктами.
+ *
+ * @returns {UseQueryResult<Category[]>} - Данные категорий и состояния запроса.
+ */
+export const useCategories = ({
+    parentId = undefined,
+    hasProducts = false,
+}: {
+    parentId?: number | null;
+    hasProducts?: boolean;
+} = {}): UseQueryResult<Category[]> => {
+    const queryKey = ['categories', { parentId, hasProducts }];
+
     return useQuery<Category[]>({
-        queryKey: ['categories', parentId],
-        queryFn: () => fetchCategories(parentId),
+        queryKey,
+        queryFn: () => fetchCategories(parentId, hasProducts),
+        staleTime: 1000 * 60 * 30,
     });
 };
 
