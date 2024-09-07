@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from community.serializers import ProductReviewSerializer
 from orders.models import Like
-from .models import Product, ProductPhoto, Category, Attribute, AttributeValue, Filter, ProductAttribute
+from .models import Product, ProductPhoto, Category, Attribute, AttributeValue, Filter, ProductAttribute, Promotion
 
 
 class ParentCategorySerializer(serializers.ModelSerializer):
@@ -68,12 +68,6 @@ class ProductDetailSerializer(ProductSerializer):
         fields = ProductSerializer.Meta.fields + ['description', 'attributes']
 
 
-# class AttributeValueSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = AttributeValue
-#         fields = ['value']
-
-
 class AttributeSerializer(serializers.ModelSerializer):
     values = serializers.SerializerMethodField()
 
@@ -105,3 +99,11 @@ class CategoryFiltersSerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = ['id', 'name', 'filters']
+
+
+class PromotionSerializer(serializers.ModelSerializer):
+    products = ProductSerializer(many=True)
+
+    class Meta:
+        model = Promotion
+        fields = ['id', 'title', 'description', 'start_date', 'end_date', 'is_permanent', 'products']

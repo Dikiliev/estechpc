@@ -7,10 +7,11 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.decorators import action
+from django.utils import timezone
 
-from products.models import Product, Category, Filter
+from products.models import Product, Category, Filter, Promotion
 from .serializers import ProductSerializer, ProductDetailSerializer, CategorySerializer, CategoryFiltersSerializer, \
-    FilterSerializer, ParentCategorySerializer, ChildCategorySerializer
+    FilterSerializer, ParentCategorySerializer, ChildCategorySerializer, PromotionSerializer
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
@@ -130,6 +131,15 @@ class CategoryFiltersView(APIView):
         except Category.DoesNotExist:
             return Response({'error': 'Category not found'}, status=404)
 
+
+class PromotionViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = PromotionSerializer
+
+    def get_queryset(self):
+        now = timezone.now()
+        return Promotion.objects.filter(
+            Q(is_permanent=True) | Q(start_date__lte=now, end_date__gte=now) | Q(start_date__isnull=True, end_date__isnull=True)
+        )
 
 import json
 from django.shortcuts import render, get_object_or_404

@@ -121,15 +121,19 @@ class ProductPhoto(models.Model):
         verbose_name = 'фото товаров'
         verbose_name_plural = 'фотографии товаров'
 
-# class Favorite(models.Model):
-#     user = models.ForeignKey(User, on_delete=models.CASCADE)
-#     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='favorites')
-#     created_at = models.DateTimeField(auto_now_add=True)
-#
-#     class Meta:
-#         unique_together = ('user', 'product')
-#         verbose_name = 'Лайк'
-#         verbose_name_plural = 'Лайки'
-#
-#     def __str__(self):
-#         return f"{self.user} - {self.product.name}"
+
+class Promotion(models.Model):
+    title = models.CharField(max_length=255)
+    banner = models.ImageField(upload_to='promotion_banners', blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
+    start_date = models.DateTimeField(blank=True, null=True)
+    end_date = models.DateTimeField(blank=True, null=True)
+    is_permanent = models.BooleanField(default=False)
+    products = models.ManyToManyField(Product, related_name='promotions')
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        verbose_name = "Акция"
+        verbose_name_plural = "Акции"
