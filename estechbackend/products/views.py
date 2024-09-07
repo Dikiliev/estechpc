@@ -22,12 +22,20 @@ class CategoryViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = Category.objects.all()
         parent_id = self.request.query_params.get('parent_id', None)
+        has_products = self.request.query_params.get('has_products', None)
+
+        # Фильтрация по parent_id
         if parent_id is None:
             queryset = queryset.all()
         elif parent_id == '0':
             queryset = queryset.filter(parent__isnull=True)
         else:
             queryset = queryset.filter(parent_id=parent_id)
+
+        # Фильтрация категорий, у которых есть хотя бы один продукт
+        if has_products and has_products == 'true':
+            queryset = queryset.filter(products__isnull=False).distinct()
+
         return queryset
 
     @action(detail=True, methods=['get'])
@@ -51,6 +59,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
         children = category.children.all()
         serializer = ChildCategorySerializer(children, many=True)
         return Response(serializer.data)
+
 
 class ProductViewSet(viewsets.ModelViewSet):
     serializer_class = ProductSerializer
