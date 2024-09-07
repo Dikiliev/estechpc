@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Grid, Card, CardContent, CardMedia, Typography, Box, IconButton } from '@mui/material';
+import { Grid, Card, CardContent, CardMedia, Typography, Box, IconButton, Skeleton } from '@mui/material';
 import { IProduct } from 'types/products';
 import { useNavigate } from 'react-router-dom';
 import { DEFAULT_PRODUCT_IMAGE } from '@utils/constans';
@@ -15,9 +15,10 @@ import { useCart } from '@hooks/useCart';
 export interface ProductListProps {
     products: IProduct[];
     queryKeys: unknown[][];
+    isLoading: boolean; // Добавляем параметр для состояния загрузки
 }
 
-const ProductList: React.FC<ProductListProps> = ({ products, queryKeys }) => {
+const ProductList: React.FC<ProductListProps> = ({ products, queryKeys, isLoading }) => {
     const navigate = useNavigate();
 
     const { cart, addProductToCart, isAdding: isCartAdding, isRemoving: isCartRemoving } = useCart();
@@ -56,6 +57,45 @@ const ProductList: React.FC<ProductListProps> = ({ products, queryKeys }) => {
         event.stopPropagation();
         navigate('/cart');
     };
+
+    if (isLoading) {
+        // Отображаем скелетоны, если данные все еще загружаются
+        return (
+            <Grid container spacing={2}>
+                {Array.from(new Array(8)).map((_, index) => (
+                    <Grid item xs={12} sm={6} md={4} xl={3} key={index}>
+                        <Card
+                            sx={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                justifyContent: 'space-between',
+                                height: '100%',
+                                borderRadius: 1,
+                                overflow: 'hidden',
+                            }}
+                        >
+                            <Skeleton variant='rectangular' height={200} />
+                            <CardContent>
+                                <Skeleton variant='text' height={30} width='80%' />
+                                <Skeleton variant='text' height={20} width='60%' />
+                                <Skeleton variant='text' height={20} width='40%' />
+                                <Skeleton variant='rectangular' height={50} width='100%' />
+                            </CardContent>
+                        </Card>
+                    </Grid>
+                ))}
+            </Grid>
+        );
+    }
+
+    if (products.length === 0) {
+        // Если товаров нет
+        return (
+            <Box textAlign='center' mt={5}>
+                <Typography variant='h6'>Товары не найдены</Typography>
+            </Box>
+        );
+    }
 
     return (
         <Grid container spacing={2}>
