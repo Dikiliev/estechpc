@@ -1,5 +1,5 @@
 import React from 'react';
-import { Paper, Typography, Button, List, ListItem, ListItemText, Divider, Card, Box, Alert } from '@mui/material';
+import { Paper, Typography, Button, List, ListItem, ListItemText, Divider, Alert } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
 import theme from '@styles/theme';
 import { ICartItem as CartItemType } from 'types/cart';

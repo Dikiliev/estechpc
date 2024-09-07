@@ -29,7 +29,7 @@ import { useOrders } from '@hooks/useOrders';
 import { IOrderCreateData } from 'types/order';
 
 const CheckoutPage: React.FC = () => {
-    const { cart, clearCart } = useCart();
+    const { cart, removeSelectedItems } = useCart();
     const { createOrder } = useOrders();
     const navigate = useNavigate(); // Для навигации
 
@@ -41,6 +41,8 @@ const CheckoutPage: React.FC = () => {
         termsAccepted: true,
     });
     const [isItemsVisible, setItemsVisible] = useState(false);
+
+    const selectedItems = cart?.items?.filter((item) => item.is_selected);
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value, checked } = event.target;
@@ -66,15 +68,17 @@ const CheckoutPage: React.FC = () => {
             contact_method: contactInfo.contactMethod,
             contact_info: contactInfo.phoneNumber,
             address: contactInfo.address,
-            items: cart.items.map((item) => ({
-                product: item.product.id,
-                quantity: item.quantity,
-            })),
+            items: cart.items
+                .filter((item) => item.is_selected)
+                .map((item) => ({
+                    product: item.product.id,
+                    quantity: item.quantity,
+                })),
         };
 
         try {
             await createOrder(orderData);
-            clearCart();
+            removeSelectedItems();
             navigate('/order-success');
         } catch (error) {
             console.error('Error creating order:', error);
@@ -93,13 +97,13 @@ const CheckoutPage: React.FC = () => {
                     уточнения деталей и возможных способов оплаты.
                 </Typography>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Typography variant='body1'>Товары в корзине ({cart?.items.length || 0})</Typography>
+                    <Typography variant='body1'>Товары в корзине ({selectedItems?.length || 0})</Typography>
                     <IconButton onClick={handleToggleItems}>{isItemsVisible ? <ExpandLessIcon /> : <ExpandMoreIcon />}</IconButton>
                 </Box>
 
                 <Collapse in={isItemsVisible}>
                     <List disablePadding>
-                        {cart?.items.map((item) => (
+                        {selectedItems?.map((item) => (
                             <ListItem key={item.id} divider>
                                 <ListItemText primary={item.product.name} secondary={`Количество: ${item.quantity}`} />
                                 <Typography variant='body2'>{`${item.product.price} ₽`}</Typography>
