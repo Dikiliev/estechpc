@@ -14,7 +14,7 @@ const CategorySelector: React.FC = () => {
     const navigate = useNavigate();
     const selectedCategoryId = parentId ? parseInt(parentId, 10) : null;
 
-    const { data: categories, isLoading: categoriesLoading, isError: categoriesError } = useCategories(selectedCategoryId);
+    const { data: categories, isLoading: categoriesLoading, isError: categoriesError } = useCategories({ parentId: selectedCategoryId });
 
     const handleCategoryClick = async (category: Category) => {
         try {

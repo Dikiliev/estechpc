@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
-import { Grid, Container, Typography, CircularProgress, Tabs, Tab, Box, Skeleton } from '@mui/material';
+import { Grid, Container, Typography, CircularProgress, Tabs, Tab, Skeleton, Button, tabsClasses } from '@mui/material';
 import ProductList from '@components/productList/ProductList';
 import ErrorText from '@components/errorText/ErrorText';
-import LoadingBox from '@components/loadingBox/LoadingBox';
 import { useProducts } from '@hooks/useProducts';
 import { useCategories } from '@hooks/useCategories';
+import theme from '@styles/theme';
 
 const HitCatalog: React.FC = () => {
-    const [categoryId, setCategoryId] = useState<number | undefined>(undefined);
+    const [categoryId, setCategoryId] = useState<number>(0);
 
     const { data: categories, isLoading: categoriesLoading, isError: categoriesError } = useCategories({ hasProducts: true });
     const { products, ref, isFetchingNextPage, productsLoading, productsError } = useProducts(categoryId);
@@ -18,10 +18,6 @@ const HitCatalog: React.FC = () => {
 
     const renderTabsSkeletons = () => <Skeleton width={'100%'} height={48} sx={{ mb: '24px' }} />;
 
-    if (productsLoading || categoriesLoading) {
-        return <LoadingBox />;
-    }
-
     if (productsError || categoriesError) {
         return <ErrorText>Ошибка загрузки данных.</ErrorText>;
     }
@@ -29,7 +25,7 @@ const HitCatalog: React.FC = () => {
     return (
         <Container maxWidth='xl' sx={{ py: 4 }}>
             <Typography variant='h4' gutterBottom>
-                Хиты продаж
+                Рекомендуем
             </Typography>
 
             {/* Табы для выбора категорий */}
@@ -37,12 +33,17 @@ const HitCatalog: React.FC = () => {
                 <Tabs
                     value={categoryId}
                     onChange={handleSetCategory}
-                    variant='scrollable'
-                    scrollButtons='auto'
                     aria-label='Категории продуктов'
-                    sx={{ mb: 3 }}
+                    variant='scrollable'
+                    scrollButtons={'auto'}
+                    sx={{
+                        mb: 2,
+                        [`& .${tabsClasses.scrollButtons}`]: {
+                            '&.Mui-disabled': { opacity: 0.3 },
+                        },
+                    }}
                 >
-                    <Tab label={'Все категории'} value={undefined} />
+                    <Tab label={'Все категории'} value={0} />
                     {categories?.map((category) => <Tab key={category.id} label={category.name} value={category.id} />)}
                 </Tabs>
             ) : (
@@ -51,7 +52,7 @@ const HitCatalog: React.FC = () => {
 
             <Grid container spacing={2}>
                 <Grid item xs={12}>
-                    <ProductList products={products} queryKeys={[[categoryId]]} />
+                    <ProductList products={products} isLoading={productsLoading} queryKeys={[[categoryId]]} />
                 </Grid>
                 <Grid item xs={12} ref={ref} sx={{ textAlign: 'center', mt: 2 }}>
                     {isFetchingNextPage && <CircularProgress />}
