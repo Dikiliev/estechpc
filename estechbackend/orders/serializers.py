@@ -22,7 +22,7 @@ class CartSerializer(serializers.ModelSerializer):
         fields = ['id', 'items', 'total_amount']
 
     def get_total_amount(self, obj):
-        total = sum(item.product.price * item.quantity for item in obj.items.all())
+        total = sum(item.product.price * item.quantity for item in obj.items.filter(is_selected=True))
         return total
 
 
