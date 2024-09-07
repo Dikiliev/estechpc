@@ -4,7 +4,7 @@ import { useInView } from 'react-intersection-observer';
 import { useEffect } from 'react';
 import { Filters, Range } from 'types/productFilters';
 
-export const useProducts = (categoryID: number, selectedFilters: Filters, priceRange: Range) => {
+export const useProducts = (categoryID?: number | null, selectedFilters: Filters = {}, priceRange: Range = { min: 0, max: 0 }) => {
     const { ref, inView } = useInView();
 
     const productsQuery = ['products', categoryID, selectedFilters, priceRange];

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Carousel from 'react-material-ui-carousel';
-import { Box, Button, CardContent, Typography } from '@mui/material';
+import { Box, Button, CardContent, Container, Typography } from '@mui/material';
 
 import periphery from '@assets/images/pcs/periphery.jpg';
 import banner_1 from '@assets/images/banners/pubg-1.png';
@@ -76,11 +76,11 @@ const HomeCarousel: React.FC = () => {
     ];
 
     return (
-        <Box sx={{ position: 'relative', mb: 5 }}>
+        <Container maxWidth='xl' sx={{ position: 'relative', mb: 5 }}>
             <Carousel
                 autoPlay={false}
                 interval={6000}
-                height={500}
+                height={300}
                 animation='slide'
                 indicators={false}
                 navButtonsAlwaysVisible={false}
@@ -117,7 +117,7 @@ const HomeCarousel: React.FC = () => {
                     />
                 ))}
             </Box>
-        </Box>
+        </Container>
     );
 };
 

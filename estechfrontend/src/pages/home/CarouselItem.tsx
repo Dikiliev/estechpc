@@ -14,7 +14,7 @@ const CarouselItem: React.FC<CarouselItemProps> = ({ imageUrl, content, overlayO
                 backgroundImage: `url(${imageUrl})`,
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
-                height: 500,
+                height: 300,
                 display: 'flex',
                 alignItems: 'center',
                 color: 'white',

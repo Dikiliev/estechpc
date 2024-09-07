@@ -15,17 +15,20 @@ export interface FiltersResponse {
 }
 
 export const fetchProducts = async (
-    categoryId: number | null,
-    selectedFilters: { [key: string]: string[] },
-    priceRange: { min: number; max: number },
-    page: number
+    categoryId?: number | null,
+    selectedFilters: { [key: string]: string[] } = {},
+    priceRange: { min: number; max: number } = { min: 0, max: 0 },
+    page: number = 1
 ): Promise<ProductsResponse> => {
     try {
         const params = new URLSearchParams();
 
-        if (categoryId !== null) {
+        // Добавляем категорию, если она указана
+        if (!!categoryId) {
             params.append('c', categoryId.toString());
         }
+
+        // Добавляем фильтр по цене, если указаны границы
         if (priceRange.min > 0) {
             params.append('minp', priceRange.min.toString());
         }
@@ -33,16 +36,20 @@ export const fetchProducts = async (
             params.append('maxp', priceRange.max.toString());
         }
 
-        // Adding attribute filters
+        // Добавляем фильтры атрибутов
         Object.entries(selectedFilters).forEach(([key, values]) => {
             values.forEach((value) => {
                 params.append('attribute', `${key}:${value}`);
             });
         });
 
+        // Указываем, что товары, отсутствующие на складе, не включены
         params.append('include_out_of_stock', 'false');
+
+        // Добавляем номер страницы
         params.append('page', page.toString());
 
+        // Выполняем запрос
         const response = await apiInstance.get(`/products/list/?${params.toString()}`);
         if (response.data && Array.isArray(response.data.results)) {
             return response.data;
