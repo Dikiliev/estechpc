@@ -1,5 +1,5 @@
 import React from 'react';
-import { Typography, List, FormGroup, FormControlLabel, Checkbox, TextField, Box, Button } from '@mui/material';
+import { Typography, List, FormGroup, FormControlLabel, Checkbox, TextField, Box, Button, Skeleton } from '@mui/material';
 import { Filter, Filters, Range } from 'types/productFilters';
 
 interface FiltersPanelProps {
@@ -9,9 +9,18 @@ interface FiltersPanelProps {
     onFilterChange: (filters: Filters) => void;
     onPriceRangeChange: (range: Range) => void;
     onApply: () => void;
+    isLoading: boolean;
 }
 
-const FiltersPanel: React.FC<FiltersPanelProps> = ({ filters, selectedFilters, priceRange, onFilterChange, onPriceRangeChange, onApply }) => {
+const FiltersPanel: React.FC<FiltersPanelProps> = ({
+    filters,
+    selectedFilters,
+    priceRange,
+    onFilterChange,
+    onPriceRangeChange,
+    onApply,
+    isLoading,
+}) => {
     const [enabledApplyButton, setEnabledApplyButton] = React.useState(false);
 
     const handleFilterChange = (filterId: string, value: string) => {
@@ -54,6 +63,7 @@ const FiltersPanel: React.FC<FiltersPanelProps> = ({ filters, selectedFilters, p
                                 size='small'
                                 variant='outlined'
                                 fullWidth
+                                disabled={isLoading} // Блокируем ввод при загрузке
                             />
                             <TextField
                                 label='Максимум'
@@ -64,26 +74,35 @@ const FiltersPanel: React.FC<FiltersPanelProps> = ({ filters, selectedFilters, p
                                 size='small'
                                 variant='outlined'
                                 fullWidth
+                                disabled={isLoading} // Блокируем ввод при загрузке
                             />
                         </Box>
                     </FormGroup>
-                    {filters?.map((filter) => (
-                        <FormGroup key={filter.id}>
-                            <Typography variant='subtitle1'>{filter.name}</Typography>
-                            {filter.values.map((value) => (
-                                <FormControlLabel
-                                    control={
-                                        <Checkbox
-                                            checked={selectedFilters[filter.id]?.includes(value) || false}
-                                            onChange={() => handleFilterChange(filter.id.toString(), value)}
-                                        />
-                                    }
-                                    label={value}
-                                    key={value}
-                                />
-                            ))}
-                        </FormGroup>
-                    ))}
+                    {isLoading
+                        ? // Показ скелетонов, когда фильтры загружаются
+                          Array.from(new Array(5)).map((_, index) => (
+                              <Box key={index} sx={{ mt: 2 }}>
+                                  <Skeleton variant='text' width={120} />
+                                  <Skeleton variant='rectangular' width='100%' height={40} sx={{ mt: 1 }} />
+                              </Box>
+                          ))
+                        : filters?.map((filter) => (
+                              <FormGroup key={filter.id}>
+                                  <Typography variant='subtitle1'>{filter.name}</Typography>
+                                  {filter.values.map((value) => (
+                                      <FormControlLabel
+                                          control={
+                                              <Checkbox
+                                                  checked={selectedFilters[filter.id]?.includes(value) || false}
+                                                  onChange={() => handleFilterChange(filter.id.toString(), value)}
+                                              />
+                                          }
+                                          label={value}
+                                          key={value}
+                                      />
+                                  ))}
+                              </FormGroup>
+                          ))}
                 </Box>
             </List>
 
