@@ -2,7 +2,6 @@ import React from 'react';
 import { useParams } from 'react-router-dom';
 import { Grid, Container, CircularProgress } from '@mui/material';
 import ProductList from '@components/productList/ProductList';
-import LoadingBox from '@components/loadingBox/LoadingBox';
 import ErrorText from '@components/errorText/ErrorText';
 import { useProductFilters } from '@hooks/useProductFilters';
 import { useProducts } from '@hooks/useProducts';

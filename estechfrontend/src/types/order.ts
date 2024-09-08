@@ -45,10 +45,3 @@ export interface IOrderItem {
     quantity: number;
     total_price: number;
 }
-
-export interface PaginatedResponse<T> {
-    count: number;
-    next: string | null;
-    previous: string | null;
-    results: T[];
-}

@@ -1,28 +1,18 @@
-import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { fetchOrders, createOrder } from 'src/api/orders';
-import { IOrder, IOrderCreateData, PaginatedResponse } from 'src/types/order';
+import { IOrder, IOrderCreateData } from 'src/types/order';
+import { PaginatedResponse } from 'types/common';
 
 const ORDERS_QUERY_KEY = 'orders';
 
-export const useOrders = () => {
+export const useOrders = (page: number) => {
     const queryClient = useQueryClient();
 
-    // Получение списка заказов с пагинацией через useInfiniteQuery
-    const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isError, error } = useInfiniteQuery<PaginatedResponse<IOrder>, Error>({
-        queryKey: [ORDERS_QUERY_KEY],
-        queryFn: ({ pageParam = 1 }) => fetchOrders(typeof pageParam === 'number' ? pageParam : 1),
-        getNextPageParam: (lastPage) => {
-            const nextUrl = lastPage.next;
-            if (nextUrl) {
-                const urlParams = new URLSearchParams(nextUrl.split('?')[1]);
-                return urlParams.get('page') ? parseInt(urlParams.get('page')!) : undefined;
-            }
-            return undefined;
-        },
-        initialPageParam: 1,
+    const { data, isLoading, isError, error } = useQuery<PaginatedResponse<IOrder>, Error>({
+        queryKey: [ORDERS_QUERY_KEY, page], // Передаем страницу в ключе
+        queryFn: () => fetchOrders(page),
     });
 
-    // Мутация для создания нового заказа
     const createOrderMutation = useMutation<IOrderCreateData, Error, IOrderCreateData>({
         mutationFn: createOrder,
         onSuccess: () => {
@@ -30,14 +20,15 @@ export const useOrders = () => {
         },
     });
 
+    const totalPages = data?.total_pages || 1;
+    const orders = data?.results || [];
+
     return {
-        orders: data?.pages.flatMap((page) => page.results) || [],
+        orders,
         isLoading,
         isError,
         error,
-        fetchNextPage,
-        hasNextPage,
-        isFetchingNextPage,
+        totalPages,
         createOrder: createOrderMutation.mutateAsync,
     };
 };

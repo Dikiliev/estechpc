@@ -16,7 +16,7 @@ interface OrderCardProps {
 
 const OrderCard: React.FC<OrderCardProps> = ({ order, isExpanded, onToggle }) => {
     return (
-        <Card elevation={0} sx={{ mb: 3, p: 1 }} onClick={onToggle}>
+        <Card elevation={0} sx={{ mb: 2, p: 1 }} onClick={onToggle}>
             <CardContent>
                 <Grid container justifyContent='space-between' alignItems='center'>
                     <Grid item>

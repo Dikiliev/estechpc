@@ -1,16 +1,22 @@
 import React, { useState } from 'react';
-import { Box, Container, Typography, List } from '@mui/material';
+import { Box, Container, Typography, List, Pagination } from '@mui/material';
 import { useOrders } from 'src/hooks/useOrders';
 import OrderCard from './OrderCard';
 import BaseEmptyState from '@components/BaseEmptyState/BaseEmptyState';
 import noOrdersIcon from '@assets/images/free-icon-heart-40484161.png';
 
 const OrdersPage: React.FC = () => {
-    const { orders, isLoading, isError } = useOrders();
+    const [currentPage, setCurrentPage] = useState<number>(1);
+    const { orders, isLoading, isError, totalPages } = useOrders(currentPage);
+
     const [expandedOrderId, setExpandedOrderId] = useState<number | null>(null);
 
     const handleToggle = (orderId: number) => {
         setExpandedOrderId((prevOrderId) => (prevOrderId === orderId ? null : orderId));
+    };
+
+    const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
+        setCurrentPage(value);
     };
 
     if (isLoading) {
@@ -45,6 +51,9 @@ const OrdersPage: React.FC = () => {
                     <OrderCard key={order.id} order={order} isExpanded={expandedOrderId === order.id} onToggle={() => handleToggle(order.id)} />
                 ))}
             </List>
+            <Box display='flex' justifyContent='center'>
+                <Pagination count={totalPages} page={currentPage} onChange={handlePageChange} color='primary' />
+            </Box>
         </Container>
     );
 };
