@@ -1,5 +1,9 @@
-/* src/components/header/Header.module.css */
 .logo {
-    height: 40px;
+    height: 48px;
+}
 
+@media (max-width: 900px) {
+    .logo {
+        height: 38px;
+    }
 }

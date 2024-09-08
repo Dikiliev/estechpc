@@ -24,6 +24,7 @@ import { useStore } from '@stores/StoreContext';
 
 import { useCart } from '@hooks/useCart';
 import { useFavorites } from '@hooks/useFavorites';
+import MenuIcon from '@mui/icons-material/Menu';
 
 const Header: React.FC = observer(() => {
     const navigate = useNavigate();
@@ -76,7 +77,7 @@ const Header: React.FC = observer(() => {
                 <Container maxWidth='xl'>
                     <Toolbar disableGutters sx={{ gap: 3 }}>
                         <Logo className={styles.logo} onClick={() => navigate('/')} />
-                        <Button variant='contained' sx={{ px: 2 }} onClick={() => navigate('/categories')}>
+                        <Button variant='contained' size={'large'} sx={{ px: 2 }} onClick={() => navigate('/categories')} endIcon={<MenuIcon />}>
                             Каталог
                         </Button>
 

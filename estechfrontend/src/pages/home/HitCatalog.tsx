@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Grid, Container, Typography, CircularProgress, Tabs, Tab, Skeleton, tabsClasses } from '@mui/material';
+import { Grid, Container, Typography, CircularProgress, Tabs, Tab, Skeleton, tabsClasses, Box } from '@mui/material';
 import ProductList from '@components/productList/ProductList';
 import ErrorText from '@components/errorText/ErrorText';
 import { useProducts } from '@hooks/useProducts';
@@ -22,7 +22,7 @@ const HitCatalog: React.FC = () => {
     }
 
     return (
-        <Container maxWidth='xl'>
+        <Container maxWidth='xl' disableGutters>
             <Typography variant='h4' gutterBottom>
                 Рекомендуем
             </Typography>
