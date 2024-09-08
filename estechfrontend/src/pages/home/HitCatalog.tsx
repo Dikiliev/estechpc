@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-import { Grid, Container, Typography, CircularProgress, Tabs, Tab, Skeleton, Button, tabsClasses } from '@mui/material';
+import { Grid, Container, Typography, CircularProgress, Tabs, Tab, Skeleton, tabsClasses } from '@mui/material';
 import ProductList from '@components/productList/ProductList';
 import ErrorText from '@components/errorText/ErrorText';
 import { useProducts } from '@hooks/useProducts';
 import { useCategories } from '@hooks/useCategories';
-import theme from '@styles/theme';
 
 const HitCatalog: React.FC = () => {
     const [categoryId, setCategoryId] = useState<number>(0);
@@ -23,7 +22,7 @@ const HitCatalog: React.FC = () => {
     }
 
     return (
-        <Container maxWidth='xl' sx={{ py: 4 }}>
+        <Container maxWidth='xl'>
             <Typography variant='h4' gutterBottom>
                 Рекомендуем
             </Typography>

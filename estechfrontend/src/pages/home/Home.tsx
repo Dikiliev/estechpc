@@ -8,7 +8,7 @@ import HitCatalog from '@pages/home/HitCatalog';
 const Home = () => {
     return (
         <Box sx={{ backgroundColor: 'pallett' }}>
-            <Container maxWidth={'xl'} sx={{ py: 5, display: 'flex', flexDirection: 'column', gap: 1 }}>
+            <Container maxWidth={'xl'} sx={{ py: 5, display: 'flex', flexDirection: 'column', gap: 2 }}>
                 <HomeCarousel />
 
                 <HitCatalog />
