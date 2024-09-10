@@ -30,7 +30,7 @@ import { IOrderCreateData } from 'types/order';
 
 const CheckoutPage: React.FC = () => {
     const { cart, removeSelectedItems } = useCart();
-    const { createOrder } = useOrders();
+    const { createOrder } = useOrders(1);
     const navigate = useNavigate(); // Для навигации
 
     const [contactInfo, setContactInfo] = useState({

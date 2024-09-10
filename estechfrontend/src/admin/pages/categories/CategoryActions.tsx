@@ -1,11 +1,11 @@
 import React from 'react';
 import { Button } from '@mui/material';
 import { Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
-import { Category } from '@admin/api/category';
+import { ICategory } from '@admin/types/category';
 
 interface CategoryActionsProps {
-    category: Category;
-    onEdit: (category: Category) => void;
+    category: ICategory;
+    onEdit: (category: ICategory) => void;
     onDelete: (id: number) => void;
 }
 

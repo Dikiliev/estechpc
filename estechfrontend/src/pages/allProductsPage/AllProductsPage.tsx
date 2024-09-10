@@ -51,7 +51,7 @@ const AllProductsPage: React.FC = () => {
             </Typography>
             <Grid container spacing={2}>
                 <Grid item xs={12}>
-                    <ProductList products={products} queryKeys={[productsQuery]} />
+                    <ProductList isLoading={isLoading} products={products} queryKeys={[productsQuery]} />
                 </Grid>
                 <Grid item xs={12} ref={ref} sx={{ textAlign: 'center', mt: 2 }}>
                     {isFetchingNextPage && <CircularProgress />}
