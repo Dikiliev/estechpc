@@ -24,7 +24,7 @@ export const fetchProducts = async (
         const params = new URLSearchParams();
 
         // Добавляем категорию, если она указана
-        if (!!categoryId) {
+        if (categoryId) {
             params.append('c', categoryId.toString());
         }
 

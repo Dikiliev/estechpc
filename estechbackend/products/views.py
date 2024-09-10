@@ -87,6 +87,10 @@ class ProductViewSet(viewsets.ModelViewSet):
         #     )
         #     product_ids_from_search = [hit.meta.id for hit in es_search]
         #     queryset = queryset.filter(id__in=product_ids_from_search)
+        
+        if product_ids:
+            self.pagination_class = None
+            queryset = queryset.filter(id__in=product_ids.split(','))
 
         # Фильтрация по категории
         if category_id:

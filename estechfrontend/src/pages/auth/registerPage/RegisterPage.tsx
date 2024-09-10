@@ -1,4 +1,4 @@
-import { TextField, Button, CircularProgress, Alert } from '@mui/material';
+import { TextField, Button, CircularProgress } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import React, { useState } from 'react';
 
@@ -45,11 +45,6 @@ const RegisterPage = observer(() => {
 
     return (
         <Form onSubmit={handleSubmit} title='Регистрация'>
-            {authStore.hasErrors() && (
-                <Alert severity='error' sx={{ mb: 2 }}>
-                    {authStore.getErrorMessages()}
-                </Alert>
-            )}
             <TextField label='Имя пользователя' value={username} onChange={(e) => setUsername(e.target.value)} fullWidth margin='normal' required />
             <TextField label='Email' type='email' value={email} onChange={(e) => setEmail(e.target.value)} fullWidth margin='normal' required />
             <TextField
