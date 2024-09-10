@@ -9,9 +9,13 @@ from rest_framework.views import APIView
 from rest_framework.decorators import action
 from django.utils import timezone
 
+# from elasticsearch_dsl.query import MultiMatch
+
 from products.models import Product, Category, Filter, Promotion
 from .serializers import ProductSerializer, ProductDetailSerializer, CategorySerializer, CategoryFiltersSerializer, \
     FilterSerializer, ParentCategorySerializer, ChildCategorySerializer, PromotionSerializer
+
+# from .documents import ProductIndex
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
@@ -67,18 +71,22 @@ class ProductViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = Product.objects.all()
 
-        # Получение параметров запроса
+        # Получаем параметры запроса
+        search_query = self.request.query_params.get('search')
         category_id = self.request.query_params.get('c')
         min_price = self.request.query_params.get('minp')
         max_price = self.request.query_params.get('maxp')
         include_out_of_stock = self.request.query_params.get('include_out_of_stock', 'false')
         attribute_filters = self.request.query_params.getlist('attribute')
-
         product_ids = self.request.query_params.get('ids')
 
-        if product_ids:
-            self.pagination_class = None
-            queryset = queryset.filter(id__in=product_ids.split(','))
+        # Полнотекстовый поиск через Elasticsearch
+        # if search_query:
+        #     es_search = ProductIndex.search().query(
+        #         MultiMatch(query=search_query, fields=['name'])
+        #     )
+        #     product_ids_from_search = [hit.meta.id for hit in es_search]
+        #     queryset = queryset.filter(id__in=product_ids_from_search)
 
         # Фильтрация по категории
         if category_id:
@@ -98,7 +106,7 @@ class ProductViewSet(viewsets.ModelViewSet):
                     attribute_id, value = attr_filter.split(':')
                     q_objects |= Q(attributes__attribute_value__attribute_id=attribute_id, attributes__attribute_value__value=value)
                 except ValueError:
-                    continue  # Игнорируем неправильно отформатированные фильтры
+                    continue
             queryset = queryset.filter(q_objects)
 
         # Фильтрация по наличию
