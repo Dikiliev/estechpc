@@ -1,12 +1,10 @@
-// src/components/header/Header.tsx
 import React, { useEffect } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import MoreIcon from '@mui/icons-material/MoreVert';
-import { Button, Container } from '@mui/material';
+import { Button, Container, Typography } from '@mui/material';
 
-// import SearchBar from './SearchBar';
 import ProfileMenu from './ProfileMenu';
 import styles from './Header.module.css';
 import Logo from '@assets/favicon.svg?react';
@@ -74,6 +72,29 @@ const Header: React.FC = observer(() => {
     return (
         <Box sx={{ flexGrow: 1 }}>
             <AppBar position='static'>
+                <Container maxWidth='xl' sx={{ pt: 1 }}>
+                    {/*<Toolbar variant={'dense'} disableGutters sx={{ justifyContent: 'center', gap: 5 }}>*/}
+                    {/*    <Typography variant='body2' component='a' href='#' sx={{ cursor: 'pointer', textDecoration: 'none', color: 'text.primary' }}>*/}
+                    {/*        О компании*/}
+                    {/*    </Typography>*/}
+                    {/*    <Typography variant='body2' component='a' href='#' sx={{ cursor: 'pointer', textDecoration: 'none', color: 'text.primary' }}>*/}
+                    {/*        Доставка и оплата*/}
+                    {/*    </Typography>*/}
+                    {/*    <Typography variant='body2' component='a' href='#' sx={{ cursor: 'pointer', textDecoration: 'none', color: 'text.primary' }}>*/}
+                    {/*        Самовывоз*/}
+                    {/*    </Typography>*/}
+                    {/*    <Typography variant='body2' component='a' href='#' sx={{ cursor: 'pointer', textDecoration: 'none', color: 'text.primary' }}>*/}
+                    {/*        Гарантия и возврат*/}
+                    {/*    </Typography>*/}
+                    {/*    <Typography variant='body2' component='a' href='#' sx={{ cursor: 'pointer', textDecoration: 'none', color: 'text.primary' }}>*/}
+                    {/*        FAQ*/}
+                    {/*    </Typography>*/}
+                    {/*    <Typography variant='body2' component='a' href='#' sx={{ cursor: 'pointer', textDecoration: 'none', color: 'text.primary' }}>*/}
+                    {/*        Контакты*/}
+                    {/*    </Typography>*/}
+                    {/*</Toolbar>*/}
+                </Container>
+
                 <Container maxWidth='xl'>
                     <Toolbar disableGutters sx={{ gap: 3 }}>
                         <Logo className={styles.logo} onClick={() => navigate('/')} />
@@ -81,7 +102,6 @@ const Header: React.FC = observer(() => {
                             Каталог
                         </Button>
 
-                        {/*<SearchBar />*/}
                         <Box flexGrow={1}></Box>
 
                         <Box sx={{ display: { xs: 'none', md: 'flex', gap: theme.spacing(5), alignItems: 'center' } }}>
@@ -108,14 +128,12 @@ const Header: React.FC = observer(() => {
                             />
 
                             {authStore.isAuthenticated ? (
-                                <>
-                                    <IconWithLabel
-                                        icon={<AccountCircle />}
-                                        label='Профиль'
-                                        ariaLabel='account of current user'
-                                        onClick={handleProfileMenuOpen}
-                                    />
-                                </>
+                                <IconWithLabel
+                                    icon={<AccountCircle />}
+                                    label='Профиль'
+                                    ariaLabel='account of current user'
+                                    onClick={handleProfileMenuOpen}
+                                />
                             ) : (
                                 <Button variant='contained' onClick={() => navigate('/login')}>
                                     Войти
