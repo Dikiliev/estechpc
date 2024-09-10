@@ -69,7 +69,7 @@ const App: React.FC = () => {
                     </Route>
 
                     {/* Админские маршруты */}
-                    <Route path='/admin' element={<AdminSidebar />}>
+                    <Route path='/liteadmin' element={<AdminSidebar />}>
                         <Route index element={<CategoriesPage />} />
                         <Route path='categories' element={<CategoriesPage />} />
                     </Route>
