@@ -37,6 +37,7 @@ const ProductsPage: React.FC = () => {
             <Grid container spacing={2}>
                 <Grid item xs={12} sx={{ display: { xs: 'block', sm: 'none' }, textAlign: 'right' }}>
                     <FiltersDrawer
+                        isFiltersLoading={filtersLoading}
                         filters={filters}
                         draftFilters={draftFilters}
                         setDraftFilters={setDraftFilters}

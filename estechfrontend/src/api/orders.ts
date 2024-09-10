@@ -1,6 +1,7 @@
 // src/api/orders.ts
-import { IOrder, IOrderCreateData, PaginatedResponse } from 'types/order';
+import { IOrder, IOrderCreateData } from 'types/order';
 import apiInstance from '@api/apiInstance';
+import { PaginatedResponse } from 'types/common';
 
 // Получение списка заказов с поддержкой пагинации
 export const fetchOrders = async (page: number = 1): Promise<PaginatedResponse<IOrder>> => {

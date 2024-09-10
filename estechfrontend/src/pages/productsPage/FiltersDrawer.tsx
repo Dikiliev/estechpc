@@ -5,6 +5,7 @@ import FiltersPanel from '@components/filtersPanel/FiltersPanel';
 import { Filter, Filters, Range } from 'types/productFilters';
 
 interface FiltersDrawerProps {
+    isFiltersLoading: boolean;
     filters: Filter[] | undefined;
     draftFilters: Filters;
     setDraftFilters: (filters: Filters) => void;
@@ -14,6 +15,7 @@ interface FiltersDrawerProps {
 }
 
 const FiltersDrawer: React.FC<FiltersDrawerProps> = ({
+    isFiltersLoading,
     filters,
     draftFilters,
     setDraftFilters,
@@ -36,6 +38,7 @@ const FiltersDrawer: React.FC<FiltersDrawerProps> = ({
             <Drawer anchor='left' open={isDrawerOpen} onClose={toggleDrawer(false)}>
                 <Box sx={{ width: 250, p: 2 }}>
                     <FiltersPanel
+                        isLoading={isFiltersLoading}
                         filters={filters}
                         selectedFilters={draftFilters}
                         priceRange={draftPriceRange}
