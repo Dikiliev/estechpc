@@ -79,7 +79,7 @@ const CheckoutPage: React.FC = () => {
         try {
             await createOrder(orderData);
             removeSelectedItems();
-            navigate('/order-success');
+            navigate('/order-success', { replace: true });
         } catch (error) {
             console.error('Error creating order:', error);
             alert('Произошла ошибка при создании заказа. Пожалуйста, попробуйте снова.');
