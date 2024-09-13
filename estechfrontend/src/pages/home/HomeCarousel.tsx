@@ -1,122 +1,183 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Carousel from 'react-material-ui-carousel';
-import { Box, Button, CardContent, Container, Typography } from '@mui/material';
-
-import periphery from '@assets/images/pcs/periphery.jpg';
-import banner_1 from '@assets/images/banners/pubg-1.png';
-import banner_2 from '@assets/images/banners/banner-1.png';
-import CarouselItem, { CarouselItemProps } from '@pages/home/CarouselItem';
-import theme from '@styles/theme';
+import { Box, Button, Container, Typography, useMediaQuery, useTheme, SxProps, Theme } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import { styled } from '@mui/material/styles';
+
+// Импортируем изображения
+import banner_1_desktop from '@assets/images/banners/desktop/pubg-1.png';
+import banner_1_mobile from '@assets/images/banners/mobile/pubg-1.png';
+import banner_2_desktop from '@assets/images/banners/desktop/banner-1.png';
+import banner_2_mobile from '@assets/images/banners/mobile/banner-1.png';
+
+const carouselItems = [
+    {
+        imageUrlDesktop: banner_1_desktop,
+        imageUrlMobile: banner_1_mobile,
+        overlayOpacity: 0,
+        title: 'Готовые игровые ПК',
+        description: 'Заряжены и настроены на победу. Обеспечьте себе лучшее игровое впечатление.',
+        align: 'right',
+        buttonLink: '/catalog',
+    },
+    {
+        imageUrlDesktop: banner_2_desktop,
+        imageUrlMobile: banner_2_mobile,
+        overlayOpacity: 0,
+        title: 'Новые поступления',
+        description: 'Последние новинки в мире компьютерной техники уже в нашем каталоге.',
+        align: 'left',
+        buttonLink: '/new-arrivals',
+    },
+];
+
+const CarouselItemBox = styled(Box)(({ theme }) => ({
+    position: 'relative',
+    height: '500px',
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    color: theme.palette.common.white,
+    [theme.breakpoints.down('md')]: {
+        height: '400px',
+    },
+    [theme.breakpoints.down('sm')]: {
+        height: '300px',
+    },
+}));
+
+const ContentBox = styled(Box)(({ theme }) => ({
+    position: 'relative',
+    padding: theme.spacing(4),
+    zIndex: 2,
+    maxWidth: '50%',
+    [theme.breakpoints.down('md')]: {
+        maxWidth: '70%',
+    },
+    [theme.breakpoints.down('sm')]: {
+        maxWidth: '100%',
+        padding: theme.spacing(2),
+    },
+}));
 
 const HomeCarousel: React.FC = () => {
     const navigate = useNavigate();
-    const [activeIndex, setActiveIndex] = useState(0);
+    const theme = useTheme();
+    const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
-    const items: CarouselItemProps[] = [
-        // {
-        //     imageUrl: pc_1,
-        //     title: 'Estech PC — надежность и скорость в каждом устройстве',
-        //     description: 'Открой для себя новое измерение производительности с нашими топовыми компьютерами и комплектующими.',
-        //     buttonText: 'Посмотреть каталог',
-        //     buttonLink: '/categories',
-        // },
-        {
-            imageUrl: banner_1,
-            overlayOpacity: 0,
-            content: (
-                <CardContent sx={{ textAlign: 'right' }}>
-                    <Typography variant='h4' gutterBottom>
-                        Готовые игровые ПК
-                    </Typography>
-                    <Typography variant='subtitle1'>Заряжены и настроены на победу. Обеспечьте себе лучшее игровое впечатление.</Typography>
-
-                    <Button variant='contained' size='large' color='primary' onClick={() => navigate('/catalog')} sx={{ mt: 2 }}>
-                        Перейти в каталог
-                    </Button>
-                </CardContent>
-            ),
-        },
-        {
-            imageUrl: banner_2,
-            overlayOpacity: 0,
-            content: (
-                <CardContent>
-                    <Typography variant='h4' gutterBottom>
-                        Готовые игровые ПК
-                    </Typography>
-                    <Typography variant='subtitle1' sx={{ mb: 2 }}>
-                        Заряжены и настроены на победу. Обеспечьте себе лучшее игровое впечатление.
-                    </Typography>
-
-                    <Button variant='contained' size='large' color='primary' onClick={() => navigate('/catalog')} sx={{ mt: 2 }}>
-                        Перейти в каталог
-                    </Button>
-                </CardContent>
-            ),
-        },
-        {
-            imageUrl: periphery,
-            overlayOpacity: 0.7,
-            content: (
-                <CardContent>
-                    <Typography variant='h4' gutterBottom>
-                        Готовые игровые ПК
-                    </Typography>
-                    <Typography variant='subtitle1' sx={{ mb: 2 }}>
-                        Заряжены и настроены на победу. Обеспечьте себе лучшее игровое впечатление.
-                    </Typography>
-
-                    <Button variant='contained' size='large' color='primary' onClick={() => navigate('/catalog')} sx={{ mt: 2 }}>
-                        Перейти в каталог
-                    </Button>
-                </CardContent>
-            ),
-        },
-    ];
+    // Стили для индикаторов в зависимости от размера экрана
+    const indicatorStyles: SxProps<Theme> = isSmallScreen
+        ? {
+              position: 'absolute',
+              top: '10px',
+              zIndex: 2,
+              display: 'flex',
+              justifyContent: 'center',
+              width: '100%',
+          }
+        : {
+              position: 'absolute',
+              bottom: '20px',
+              zIndex: 3,
+              display: 'flex',
+              justifyContent: 'center',
+              width: '100%',
+          };
 
     return (
-        <Container maxWidth='xl' disableGutters sx={{ position: 'relative', mb: 5 }}>
+        <Container maxWidth='xl' disableGutters sx={{ mb: 5 }}>
             <Carousel
-                autoPlay={false}
+                autoPlay={true}
                 interval={6000}
-                height={300}
-                animation='slide'
-                indicators={false}
-                navButtonsAlwaysVisible={false}
-                onChange={(now) => setActiveIndex(now ? now : 0)}
-            >
-                {items.map((item, index) => (
-                    <CarouselItem key={index} {...item} />
-                ))}
-            </Carousel>
-
-            {/* Кастомные линейные индикаторы */}
-            <Box
-                sx={{
-                    position: 'absolute',
-                    bottom: -20,
-                    left: 0,
-                    width: '100%',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    gap: '10px',
-                    zIndex: 10,
+                animation='fade'
+                indicators={true}
+                navButtonsAlwaysInvisible={true}
+                indicatorContainerProps={{
+                    style: indicatorStyles,
+                }}
+                indicatorIconButtonProps={{
+                    style: {
+                        color: 'rgba(255, 255, 255, 0.5)',
+                        ...(isSmallScreen && { transform: 'scale(0.8)' }), // Уменьшаем размер на мобильных
+                    },
+                }}
+                activeIndicatorIconButtonProps={{
+                    style: {
+                        color: '#C4F230',
+                        ...(isSmallScreen && { transform: 'scale(0.8)' }), // Уменьшаем размер на мобильных
+                    },
                 }}
             >
-                {items.map((_, index) => (
-                    <Box
-                        key={index}
-                        sx={{
-                            width: `min(${100 / items.length}%, 100px)`,
-                            height: '4px',
-                            borderRadius: '4px',
-                            backgroundColor: index === activeIndex ? 'primary.main' : theme.palette.grey[600],
-                            transition: 'background-color 0.3s',
-                        }}
-                    />
-                ))}
-            </Box>
+                {carouselItems.map((item, index) => {
+                    const imageUrl = isSmallScreen ? item.imageUrlMobile : item.imageUrlDesktop;
+                    return (
+                        <Box key={index}>
+                            <CarouselItemBox
+                                sx={{
+                                    backgroundImage: `url(${imageUrl})`,
+                                    '&::before': !isSmallScreen
+                                        ? {
+                                              content: '""',
+                                              position: 'absolute',
+                                              top: 0,
+                                              left: 0,
+                                              width: '100%',
+                                              height: '100%',
+                                              bgcolor: `rgba(0, 0, 0, ${item.overlayOpacity})`,
+                                              zIndex: 0,
+                                          }
+                                        : undefined,
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent:
+                                        !isSmallScreen && item.align === 'left'
+                                            ? 'flex-start'
+                                            : !isSmallScreen && item.align === 'right'
+                                              ? 'flex-end'
+                                              : 'center',
+                                }}
+                            >
+                                {!isSmallScreen && (
+                                    <ContentBox
+                                        sx={{
+                                            textAlign: item.align,
+                                        }}
+                                    >
+                                        <Typography variant='h3' gutterBottom sx={{ fontFamily: 'ActayWide', fontWeight: 700 }}>
+                                            {item.title}
+                                        </Typography>
+                                        <Typography variant='h6' sx={{ mb: 2, color: '#c2c2c2' }}>
+                                            {item.description}
+                                        </Typography>
+                                        <Button variant='contained' size='large' color='primary' onClick={() => navigate(item.buttonLink)}>
+                                            Узнать больше
+                                        </Button>
+                                    </ContentBox>
+                                )}
+                            </CarouselItemBox>
+
+                            {isSmallScreen && (
+                                <Box
+                                    sx={{
+                                        backgroundColor: theme.palette.background.paper,
+                                        padding: theme.spacing(2),
+                                        textAlign: 'center',
+                                    }}
+                                >
+                                    <Typography variant='h5' gutterBottom sx={{ fontFamily: 'ActayWide', fontWeight: 700 }}>
+                                        {item.title}
+                                    </Typography>
+                                    <Typography variant='body1' sx={{ mb: 2, color: '#c2c2c2' }}>
+                                        {item.description}
+                                    </Typography>
+                                    <Button variant='contained' size='large' color='primary' onClick={() => navigate(item.buttonLink)}>
+                                        Узнать больше
+                                    </Button>
+                                </Box>
+                            )}
+                        </Box>
+                    );
+                })}
+            </Carousel>
         </Container>
     );
 };
