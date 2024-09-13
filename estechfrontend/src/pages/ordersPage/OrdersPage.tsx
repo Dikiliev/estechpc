@@ -7,7 +7,7 @@ import noOrdersIcon from '@assets/images/free-icon-heart-40484161.png';
 
 const OrdersPage: React.FC = () => {
     const [currentPage, setCurrentPage] = useState<number>(1);
-    const { orders, isLoading, isError, totalPages } = useOrders(currentPage);
+    const { orders, isLoading, isError, totalPages } = useOrders({ page: currentPage });
 
     const [expandedOrderId, setExpandedOrderId] = useState<number | null>(null);
 

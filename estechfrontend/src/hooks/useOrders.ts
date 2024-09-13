@@ -5,19 +5,12 @@ import { PaginatedResponse } from 'types/common';
 
 const ORDERS_QUERY_KEY = 'orders';
 
-export const useOrders = (page: number) => {
-    const queryClient = useQueryClient();
-
+// Хук для получения заказов
+export const useOrders = ({ page }: { page: number }) => {
     const { data, isLoading, isError, error } = useQuery<PaginatedResponse<IOrder>, Error>({
         queryKey: [ORDERS_QUERY_KEY, page], // Передаем страницу в ключе
         queryFn: () => fetchOrders(page),
-    });
-
-    const createOrderMutation = useMutation<IOrderCreateData, Error, IOrderCreateData>({
-        mutationFn: createOrder,
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: [ORDERS_QUERY_KEY] });
-        },
+        staleTime: 5000,
     });
 
     const totalPages = data?.total_pages || 1;
@@ -29,6 +22,17 @@ export const useOrders = (page: number) => {
         isError,
         error,
         totalPages,
-        createOrder: createOrderMutation.mutateAsync,
     };
+};
+
+// Хук для создания заказа
+export const useCreateOrder = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation<IOrderCreateData, Error, IOrderCreateData>({
+        mutationFn: createOrder,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: [ORDERS_QUERY_KEY] });
+        },
+    });
 };

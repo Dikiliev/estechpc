@@ -25,12 +25,11 @@ import { useCart } from '@hooks/useCart';
 import IconButton from '@mui/material/IconButton';
 
 import { useNavigate } from 'react-router-dom';
-import { useOrders } from '@hooks/useOrders';
 import { IOrderCreateData } from 'types/order';
+import { createOrder } from '@api/orders';
 
 const CheckoutPage: React.FC = () => {
     const { cart, removeSelectedItems } = useCart();
-    const { createOrder } = useOrders(1);
     const navigate = useNavigate(); // Для навигации
 
     const [contactInfo, setContactInfo] = useState({
