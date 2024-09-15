@@ -5,12 +5,26 @@ import { useNavigate } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 
 // Импортируем изображения
+import info_1_desktop from '@assets/images/banners/desktop/info-1.png';
+import info_1_mobile from '@assets/images/banners/mobile/info-1.png';
+
 import banner_1_desktop from '@assets/images/banners/desktop/pubg-1.png';
 import banner_1_mobile from '@assets/images/banners/mobile/pubg-1.png';
+
 import banner_2_desktop from '@assets/images/banners/desktop/banner-1.png';
 import banner_2_mobile from '@assets/images/banners/mobile/banner-1.png';
 
 const carouselItems = [
+    {
+        imageUrlDesktop: info_1_desktop,
+        imageUrlMobile: info_1_mobile,
+        overlayOpacity: 0,
+        title: 'Наш интернет-магазин теперь открыт в Beta-версии!',
+        description: 'Будем рады вашей обратной связи и предложениям.',
+        align: 'center',
+        width: '80%',
+        buttonLink: '/catalog',
+    },
     {
         imageUrlDesktop: banner_1_desktop,
         imageUrlMobile: banner_1_mobile,
@@ -18,6 +32,7 @@ const carouselItems = [
         title: 'Готовые игровые ПК',
         description: 'Заряжены и настроены на победу. Обеспечьте себе лучшее игровое впечатление.',
         align: 'right',
+        width: '50%',
         buttonLink: '/catalog',
     },
     {
@@ -27,6 +42,7 @@ const carouselItems = [
         title: 'Новые поступления',
         description: 'Последние новинки в мире компьютерной техники уже в нашем каталоге.',
         align: 'left',
+        width: '50%',
         buttonLink: '/new-arrivals',
     },
 ];
@@ -49,7 +65,6 @@ const ContentBox = styled(Box)(({ theme }) => ({
     position: 'relative',
     padding: theme.spacing(4),
     zIndex: 2,
-    maxWidth: '50%',
     [theme.breakpoints.down('md')]: {
         maxWidth: '70%',
     },
@@ -86,7 +101,7 @@ const HomeCarousel: React.FC = () => {
     return (
         <Container maxWidth='xl' disableGutters sx={{ mb: 5 }}>
             <Carousel
-                autoPlay={true}
+                autoPlay={false}
                 interval={6000}
                 animation='fade'
                 indicators={true}
@@ -140,6 +155,8 @@ const HomeCarousel: React.FC = () => {
                                     <ContentBox
                                         sx={{
                                             textAlign: item.align,
+                                            height: '50%',
+                                            maxWidth: item.width,
                                         }}
                                     >
                                         <Typography variant='h3' gutterBottom sx={{ fontFamily: 'ActayWide', fontWeight: 700 }}>
