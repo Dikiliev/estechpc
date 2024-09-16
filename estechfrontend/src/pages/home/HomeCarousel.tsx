@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { CSSProperties } from 'react';
 import Carousel from 'react-material-ui-carousel';
-import { Box, Button, Container, Typography, useMediaQuery, useTheme, SxProps, Theme } from '@mui/material';
+import { Box, Button, Container, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 
@@ -80,7 +80,7 @@ const HomeCarousel: React.FC = () => {
     const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
     // Стили для индикаторов в зависимости от размера экрана
-    const indicatorStyles: SxProps<Theme> = isSmallScreen
+    const indicatorStyles: CSSProperties = isSmallScreen
         ? {
               position: 'absolute',
               top: '10px',
