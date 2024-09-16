@@ -159,10 +159,30 @@ const HomeCarousel: React.FC = () => {
                                             maxWidth: item.width,
                                         }}
                                     >
-                                        <Typography variant='h3' gutterBottom sx={{ fontFamily: 'ActayWide', fontWeight: 700 }}>
+                                        <Typography
+                                            variant='h3'
+                                            gutterBottom
+                                            sx={{
+                                                fontSize: {
+                                                    lg: '3rem',
+                                                    md: '2.5rem',
+                                                    sm: '1.5rem',
+                                                },
+                                            }}
+                                        >
                                             {item.title}
                                         </Typography>
-                                        <Typography variant='h6' sx={{ mb: 2, color: '#c2c2c2' }}>
+                                        <Typography
+                                            variant='body1'
+                                            sx={{
+                                                mb: 2,
+
+                                                fontSize: {
+                                                    lg: '1.25rem',
+                                                    sm: '1rem',
+                                                },
+                                            }}
+                                        >
                                             {item.description}
                                         </Typography>
                                         <Button variant='contained' size='large' color='primary' onClick={() => navigate(item.buttonLink)}>
