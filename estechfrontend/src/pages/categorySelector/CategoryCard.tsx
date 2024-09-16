@@ -22,7 +22,6 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({ category, onClick })
                     transition: 'transform 0.3s, box-shadow 0.3s',
                     '&:hover': {
                         transform: 'scale(1.02)',
-                        boxShadow: 3,
                     },
                 }}
             >

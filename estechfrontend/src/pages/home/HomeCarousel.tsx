@@ -125,7 +125,7 @@ const HomeCarousel: React.FC = () => {
                 {carouselItems.map((item, index) => {
                     const imageUrl = isSmallScreen ? item.imageUrlMobile : item.imageUrlDesktop;
                     return (
-                        <Box key={index}>
+                        <Box key={index} sx={{ borderRadius: 1, overflow: 'hidden' }}>
                             <CarouselItemBox
                                 sx={{
                                     backgroundImage: `url(${imageUrl})`,

@@ -117,7 +117,6 @@ const ProductList: React.FC<ProductListProps> = ({ products, queryKeys, isLoadin
                                 transition: 'transform 0.3s, box-shadow 0.3s',
                                 '&:hover': {
                                     transform: 'scale(1.02)',
-                                    boxShadow: 3,
                                 },
                             }}
                         >
