@@ -101,7 +101,7 @@ const HomeCarousel: React.FC = () => {
     return (
         <Container maxWidth='xl' disableGutters sx={{ mb: 5 }}>
             <Carousel
-                autoPlay={false}
+                autoPlay={true}
                 interval={6000}
                 animation='fade'
                 indicators={true}

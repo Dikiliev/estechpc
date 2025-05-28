@@ -14,8 +14,8 @@ import {
     FormControl,
     FormLabel,
     Box,
-    Collapse,
-} from '@mui/material';
+    Collapse, Grid,
+} from "@mui/material";
 import PhoneIcon from '@mui/icons-material/Phone';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import TelegramIcon from '@mui/icons-material/Telegram';
@@ -103,55 +103,85 @@ const CheckoutPage: React.FC = () => {
                 <Collapse in={isItemsVisible}>
                     <List disablePadding>
                         {selectedItems?.map((item) => (
-                            <ListItem key={item.id} divider>
-                                <ListItemText primary={item.product.name} secondary={`Количество: ${item.quantity}`} />
-                                <Typography variant='body2'>{`${item.product.price} ₽`}</Typography>
+                            <ListItem
+                                key={item.id}
+                                divider
+                                sx={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    flexDirection: { xs: 'column', sm: 'row' },
+                                    alignItems: { xs: 'flex-start', sm: 'center' },
+                                }}
+                            >
+                                <Box sx={{ flexGrow: 1 }}>
+                                    <Typography variant='subtitle1'>{item.product.name}</Typography>
+                                    <Typography variant='body2' color='text.secondary'>
+                                        {item.quantity} × {item.product.price} ={' '}
+                                        {item.quantity * item.product.price}
+                                    </Typography>
+                                </Box>
                             </ListItem>
                         ))}
                     </List>
                 </Collapse>
 
+
                 <Typography variant='body1' sx={{ my: 2 }}>
                     Общая сумма:{' '}
-                    <Typography component='span' variant={'h6'} color='primary'>
+                    <Typography component='span' variant='h6' color='primary'>
                         {cart?.total_amount}
                     </Typography>{' '}
                     ₽
                 </Typography>
 
                 <Box sx={{ padding: 2, marginBottom: 2 }}>
-                    <FormControl component='fieldset'>
-                        <FormLabel component='legend'>Способ связи</FormLabel>
-                        <RadioGroup row name='contactMethod' value={contactInfo.contactMethod} onChange={handleChange}>
-                            <FormControlLabel
-                                value='phone'
-                                control={<Radio />}
-                                label={
-                                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                        <PhoneIcon sx={{ mr: 1 }} /> Звонок
-                                    </Box>
-                                }
-                            />
-                            <FormControlLabel
-                                value='whatsapp'
-                                control={<Radio />}
-                                label={
-                                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                        <WhatsAppIcon sx={{ mr: 1 }} /> WhatsApp
-                                    </Box>
-                                }
-                            />
-                            <FormControlLabel
-                                value='telegram'
-                                control={<Radio />}
-                                label={
-                                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                        <TelegramIcon sx={{ mr: 1 }} /> Telegram
-                                    </Box>
-                                }
-                            />
+                    <FormControl component="fieldset" fullWidth sx={{ mt: 2 }}>
+                        <FormLabel component="legend" sx={{ mb: 1 }}>
+                            Способ связи
+                        </FormLabel>
+                        <RadioGroup
+                            name="contactMethod"
+                            value={contactInfo.contactMethod}
+                            onChange={handleChange}
+                        >
+                            <Grid container spacing={2}>
+                                <Grid item xs={12} sm={4}>
+                                    <FormControlLabel
+                                        value="phone"
+                                        control={<Radio />}
+                                        label={
+                                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                                <PhoneIcon sx={{ mr: 1 }} /> Звонок
+                                            </Box>
+                                        }
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={4}>
+                                    <FormControlLabel
+                                        value="whatsapp"
+                                        control={<Radio />}
+                                        label={
+                                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                                <WhatsAppIcon sx={{ mr: 1 }} /> WhatsApp
+                                            </Box>
+                                        }
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={4}>
+                                    <FormControlLabel
+                                        value="telegram"
+                                        control={<Radio />}
+                                        label={
+                                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                                <TelegramIcon sx={{ mr: 1 }} /> Telegram
+                                            </Box>
+                                        }
+                                    />
+                                </Grid>
+                            </Grid>
                         </RadioGroup>
                     </FormControl>
+
                     <TextField
                         label={contactInfo.contactMethod === 'telegram' ? 'Telegram ник' : 'Номер телефона'}
                         fullWidth

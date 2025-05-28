@@ -71,7 +71,6 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 12
 }
 
-
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=115),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=50),
